@@ -16,7 +16,7 @@ const  ThemeContext = createContext<ThemeContextType| undefined>(undefined);
 
 
 export const ThemeContextProvider = ({children}:{children: React.ReactNode}) => {
-  let [mode,setMode] = useState(''); 
+  let [mode,setMode] = useState('dark'); 
 
   function handleThemeChange(){
 console.log('mode was changed')
