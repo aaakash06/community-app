@@ -1,19 +1,19 @@
-import LeftBar from '@/components/shared/Leftbar'
-import NavBar from '@/components/shared/navbar'
-import React from 'react'
+import LeftBar from "@/components/shared/Leftbar";
+import NavBar from "@/components/shared/navbar";
+import React from "react";
 
-
-
-const Layout = ({children}:{children: React.ReactNode}) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className='relative background-light850_dark100 flex flex-col dark:text-white '>
-<NavBar></NavBar>
+    <main className="background-light850_dark100 ">
 
-<div className='flex-between '>
+      <NavBar></NavBar>
+   
 
-<LeftBar></LeftBar>
+      <div className='flex-between relative'>
 
-<section className='min-h-screen bg-red-900 flex-1 flex-col px-6 pb-6 pt-36  '> 
+<LeftBar/>
+
+<section className='min-h-screen  pt-36  flex-1 flex-col px-6 pb-6   '> 
 
 <div className='mx-auto w-full '>
 
@@ -23,14 +23,12 @@ const Layout = ({children}:{children: React.ReactNode}) => {
 </section>
 
 
-rightbar
+<div className="">Right</div>
 
 
 </div>
-
-
     </main>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
