@@ -1,10 +1,11 @@
+import RightBar from "@/components/SideBar/RightBar";
 import LeftBar from "@/components/shared/Leftbar";
-import NavBar from "@/components/shared/navbar";
+import NavBar from "@/components/shared/NavBar/navbar";
 import React from "react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="background-light850_dark100 ">
+    <main className="background-light850_dark100 relative ">
 
       <NavBar></NavBar>
    
@@ -23,7 +24,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 </section>
 
 
-<div className="">Right</div>
+<RightBar/>
 
 
 </div>

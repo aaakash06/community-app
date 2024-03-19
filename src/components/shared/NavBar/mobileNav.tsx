@@ -72,8 +72,8 @@ const MobileNav = () => {
               className="invert-color"
               alt="site-logo"
               src="/assets/images/site-logo.svg"
-              width={23}
-              height={23}
+              width={25}
+              height={25}
             ></Image>
             <p className="h2-bold text-dark-100 dark:text-light-900 spaceGrotesk ">
               AK <span className=" text-primary-500">Dev</span>{" "}
