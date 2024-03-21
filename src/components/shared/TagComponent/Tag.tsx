@@ -2,12 +2,13 @@ import React from 'react'
 
 interface Prop{
 item: string; 
-
+rounded?: string; 
+otherStyle?: string; 
 }
 
-const Tag = ({item}:Prop) => {
+const Tag = ({item,rounded,otherStyle}:Prop) => {
   return (
-    <span className='border dark:bg-slate-800  border-none p-1 px-3 bg-light-800 text-[11px] rounded-sm  text-zinc-400 dark:text-sky-200'>{item}</span>
+    <span className={` ${otherStyle} cursor-pointer shadow-sm  rounded-${rounded} 'border dark:bg-slate-800  border-none p-1 px-5 bg-light-800 text-[11px] text-zinc-500  dark:text-sky-300 '`}>{item}</span>
   )
 }
 
