@@ -4,6 +4,11 @@
 
 
 
+.mandatory::after{
+content: '*';
+color: red;
+}
+
 @import url('../styles/theme.css');
 
 body {

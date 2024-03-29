@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React from "react";
 import { UserButton } from "@clerk/nextjs";
 import useTheme from "@/context/context";
@@ -11,50 +11,16 @@ import FilterDropDown from "@/components/shared/Filter/Filter";
 import { HomeFilter } from "@/constants/constants";
 import Cart from "@/components/shared/Cart/Cart";
 import { Key } from "lucide-react";
-
-
-const questions = [
-  {
-    _id: '1',
-    title: 'Cascading Deletes in SQLAlchemy? I am stuck with this problem for about half a day already',
-    tags: [
-      { _id: '1', name: 'python' },
-      { _id: '2', name: 'sql' }
-    ],
-    author: {
-      _id: '1',
-      name: 'John Doe',
-      picture: 'john-doe.jpg'
-    },
-    upvotes: 1234,
-    views: 500,
-    answers: [],
-    createdAt: new Date('2023-09-01T12:00:00.000Z')
-  },
-  {
-    _id: '2',
-    title: 'How to center a div?',
-    tags: [
-      { _id: '3', name: 'css' },
-      { _id: '4', name: 'html' }
-    ],
-    author: {
-      _id: '2',
-      name: 'Jane Smith',
-      picture: 'jane-smith.jpg'
-    },
-    upvotes: 5,
-    views: 50,
-    answers: [],
-    createdAt: new Date('2021-09-02T10:30:00.000Z')
-  }
-];
+import { getAllQuestions } from "@/database/actions.db";
 
 
 
 
+const Home = async () => {
 
-const Home = () => {
+const questions =  await getAllQuestions(); 
+
+
   return (
 <>
 
