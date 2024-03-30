@@ -10,7 +10,7 @@ import SearchBar from "@/components/shared/SearchBar/SearchBar";
 import FilterDropDown from "@/components/shared/Filter/Filter";
 import { HomeFilter } from "@/constants/constants";
 import Cart from "@/components/shared/Cart/Cart";
-import { Key } from "lucide-react";
+
 import { getAllQuestions } from "@/database/actions.db";
 
 
@@ -24,7 +24,7 @@ const questions =  await getAllQuestions();
   return (
 <>
 
-<div className="flex w-full  flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center mb-10">
+<div className="flex w-full  flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center mb-10 max-sm:mx-auto">
 <h1 className="h1-bold text-dark100_light900">All Questions</h1>  
 <Link href="/ask-questions">
 <Button className="primary-gradient text-light-900 float-right">Ask a Question</Button>

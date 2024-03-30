@@ -1,4 +1,4 @@
-"use client";
+
 import React from "react";
 import { useFormState } from "react-dom";
 
@@ -14,7 +14,7 @@ import QuestionsForm from "@/components/QuestionsForm";
 
 const AskQuestion = () => {
   // let initialState = {};
-  // const router = useRouter();
+
 
   // function callFunct(currState, formData) {
   //   router.push("/");
@@ -26,7 +26,7 @@ const AskQuestion = () => {
 
   return (
     <div>
-      <h1 className="h1-bold mb-20">Ask a Question</h1>
+      <h1 className="h1-bold mb-10 text-dark-100 dark:text-light-900">Ask a Question</h1>
    <QuestionsForm></QuestionsForm>
     </div>
   );
