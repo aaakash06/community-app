@@ -23,7 +23,7 @@ import Tag from "./shared/TagComponent/Tag";
 import { postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 
-const QuestionsForm = () => {
+const QuestionsForm = ({dbUserId}: {dbUserId: string}) => {
   const router = useRouter();
   let type= 'submit'
 const [isSubmitting,setIsSubmitting]=useState<boolean>(false); 
@@ -42,18 +42,22 @@ tags: [],
   async function onSubmit(values: z.infer<typeof QuestionSchema>) {
     setIsSubmitting(true)
     try{
-     postQuestion(values); 
+const userId = JSON.parse(dbUserId); 
+const data = {...values, userId } 
+console.log(data); 
+     postQuestion(data); 
+    // console.log(userId)
 
     }
     catch(err){
-
+console.log('error occured during submiting the question form')
 
     }
     finally{
      setIsSubmitting(false)
      router.push('/')
     }
-   console.log(values)
+  //  console.log(data)
     
   }
 

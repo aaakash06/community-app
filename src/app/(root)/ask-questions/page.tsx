@@ -2,9 +2,10 @@
 import React from "react";
 import { useFormState } from "react-dom";
 
-import { postQuestion } from "@/database/actions.db";
+import { getUserByClerkId, postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 import QuestionsForm from "@/components/QuestionsForm";
+import { auth } from "@clerk/nextjs";
 
 // function callFunc(currState, formData) {
 //   const data = Object.fromEntries(formData);
@@ -12,7 +13,15 @@ import QuestionsForm from "@/components/QuestionsForm";
 //   return postQuestion(data);
 // }
 
-const AskQuestion = () => {
+const AskQuestion =  async () => {
+
+// const clerkUser = auth(); 
+// console.log(clerkUser)
+const clerkId = '123456'; 
+
+const dbUser  = await getUserByClerkId(clerkId); 
+// console.log(dbUser)
+
   // let initialState = {};
 
 
@@ -27,7 +36,7 @@ const AskQuestion = () => {
   return (
     <div>
       <h1 className="h1-bold mb-10 text-dark-100 dark:text-light-900">Ask a Question</h1>
-   <QuestionsForm></QuestionsForm>
+   <QuestionsForm dbUserId={ JSON.stringify(dbUser._id)} ></QuestionsForm>
     </div>
   );
 };

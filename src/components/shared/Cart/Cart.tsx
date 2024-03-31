@@ -1,13 +1,19 @@
+
+
 import React from 'react'
 import Tag from '../TagComponent/Tag'
 import Image from 'next/image'
 import { getTimeAgo,formatNumber } from '@/lib/utils'
 import { IQuestion } from '@/database/model.db'
+import { getUserById } from '@/database/actions.db'
 
 
 // type QuestionTypePartial = Partial<QuestionType>; 
 
- const Cart = ({question}:{question: IQuestion}) => {
+ const Cart = async ({question}:{question: IQuestion}) => {
+const author: any = await getUserById(question.author); 
+const authName: string = author?.name || 'aakash'; 
+
   return (
 
 
@@ -15,7 +21,7 @@ import { IQuestion } from '@/database/model.db'
     <div className="flex flex-col gap-5 p-7 background-light900_dark200 rounded-lg shadow-md ">
      <div className="flex items-center gap-1 md:hidden ">
             <Image className="invert dark:invert-0" alt="avatar" src="/assets/icons/avatar.svg" width={20} height={20}></Image>
-            <span> question.author.name <span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
+            <span>{authName}<span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
   
             </div>
           <h2 className="text-lg tracking-tighter line-clamp-1 h3-semi-bold"> {question.title} </h2>
@@ -28,7 +34,7 @@ import { IQuestion } from '@/database/model.db'
           <div className="bottom flex justify-between">
             <div className="flex items-center gap-1 max-md:hidden ">
             <Image className="invert dark:invert-0" alt="avatar" src="/assets/icons/avatar.svg" width={20} height={20}></Image>
-            <span> Hello  <span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
+            <span> {authName} <span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
   
             </div>
        
@@ -41,7 +47,7 @@ import { IQuestion } from '@/database/model.db'
                   height={15}
                   alt="like-svg"
                 />
-                <span>{formatNumber(question.upvotes.length)} votes</span>
+                <span> {formatNumber(question.upvotes.length)}  votes</span>
               </div>
               <div className="like flex gap-1">
                 <Image

@@ -4,7 +4,24 @@ import { Question, Tag, User } from "./model.db";
 import { connectToDB } from "./connect.db";
 import { IQuestion } from "./model.db";
 import { QuestionInterface} from "@/lib/formSchema";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import { connect } from "http2";
+import { useId } from "react";
+import { Types } from "mongoose";
+
+type QuestionType  = {
+
+  title: string;
+  content: string;
+  tags: mongoose.Schema.Types.ObjectId[];
+  views: number;
+  upvotes: mongoose.Schema.Types.ObjectId[];
+  downvotes: mongoose.Schema.Types.ObjectId[];
+  author: mongoose.Schema.Types.ObjectId;
+  answers: mongoose.Schema.Types.ObjectId[];
+  createdAt: Date;
+
+}
 
 export async function getAllUsers() {
   try {
@@ -21,23 +38,30 @@ export async function getAllUsers() {
 export async function postQuestion(data : QuestionInterface) {
   try {
     await connectToDB();
+//getUserinfo
+
+
+
+
+
     const tagArray : mongoose.Schema.Types.ObjectId[]=[]; 
-    const tagsArray: string[] =data.tags;
+    const tagsArray: string[] =[...data.tags];
     // console.log(data.tags)
    
-      let tagName;
-      for (tagName of tagsArray) {
-        let tagFound = await Tag.find({ name: tagName });
+      // let tagName;
+      for (let tagName of tagsArray) {
+        let tagFound = await Tag.findOne({ name: tagName });
 
         if (tagFound) {
           console.log("seems tag has been found ");
           console.log(tagFound);
-          tagArray.push(tagFound);
+          tagArray.push(tagFound._id);
           console.log("tag added to the array");
         } else {
           console.log("coudn't find the tag");
+          console.log("creating new tag");
           const newTag = await Tag.create({
-            title: tagName,
+          name: tagName,
            
           });
           tagArray.push(await newTag._id);
@@ -46,9 +70,8 @@ export async function postQuestion(data : QuestionInterface) {
       }
   
 
-    const newQuestion = { ...data, user: "6602eee1867983913fafb0e1" };
     console.log(tagArray);
-    const neww = await Question.create({ ...newQuestion, tags: tagArray });
+    const neww = await Question.create({ ...data, tags: tagArray, author : data.userId });
     console.log(neww);
     //  return users;
   } catch (err) {
@@ -58,7 +81,7 @@ export async function postQuestion(data : QuestionInterface) {
   // console.log('hello')
 }
 
-export const getAllQuestions = async (): IQuestion[] => {
+export const getAllQuestions = async (): Partial<QuestionType>=> {
   try {
     await connectToDB();
     let allQuestions = await Question.find();
@@ -69,3 +92,41 @@ export const getAllQuestions = async (): IQuestion[] => {
     console.log(err);
   }
 };
+
+export const getUserByClerkId = async(id: string)=>{
+
+try{
+connectToDB(); 
+const user =await User.findOne({ clerkId: id }); 
+return user; 
+
+}
+catch(err){
+
+console.log('error occured during fetching user by id ')
+}
+
+
+
+}
+
+
+export async function getUserById(userId: mongoose.Schema.Types.ObjectId ){
+  try{
+
+  // console.log(userId)
+  const user = await User.findById(userId)
+  // console.log('the required user is ')
+//   console.log('user got')
+// console.log(user)
+return user; 
+  
+  }
+
+  catch(err){
+
+    console.log('not find user with the given id ')
+  }
+
+
+}

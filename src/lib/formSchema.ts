@@ -1,4 +1,4 @@
-
+import mongoose from "mongoose"
 import { string, z } from "zod"
  
 export const QuestionSchema = z.object({
@@ -12,4 +12,5 @@ export interface QuestionInterface {
   title: string,
 content: string,
 tags: string[],
+userId: mongoose.Schema.Types.ObjectId
 }

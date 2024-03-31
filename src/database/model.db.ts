@@ -31,7 +31,7 @@ export interface IUser extends mongoose.Document {
 
   export interface ITag extends Document {
     name: string;
-    description: string;
+    description?: string;
     questions: Schema.Types.ObjectId[];
     followers: Schema.Types.ObjectId[];
     createdOn: Date;
@@ -73,28 +73,48 @@ const questionSchema = new Schema<IQuestion>({
       type: Number,
       default: 0
     },
-    upvotes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-      }
-    ],
-    downvotes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-      }
-    ],
+    upvotes: {
+
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
+
+    }
+    ,
+    
+   
+    downvotes: {
+
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
+
+    }
+    ,
     author: {
       type: Schema.Types.ObjectId,
       ref: 'User'
     },
-    answers: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Answer'
-      }
-    ],
+    answers: {
+
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
+
+    }
+    ,
     createdAt: {
       type: Date,
       default: Date.now
@@ -102,7 +122,7 @@ const questionSchema = new Schema<IQuestion>({
   });
   const tagSchema = new Schema<ITag>({
     name: { type: String, required: true, unique: true },
-    description: { type: String, required: true },
+    description: { type: String, default:"didn't provide any description" },
     questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     createdOn: { type: Date, required: true, default: Date.now }
