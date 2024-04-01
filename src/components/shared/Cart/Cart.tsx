@@ -6,13 +6,25 @@ import Image from 'next/image'
 import { getTimeAgo,formatNumber } from '@/lib/utils'
 import { IQuestion } from '@/database/model.db'
 import { getUserById } from '@/database/actions.db'
+import mongoose from 'mongoose'
 
 
-// type QuestionTypePartial = Partial<QuestionType>; 
+type QuestionType = {
+  _id: mongoose.Schema.Types.ObjectId;
+  title: string;
+  content: string;
+  tags: mongoose.Schema.Types.ObjectId[];
+  views: number;
+  upvotes: mongoose.Schema.Types.ObjectId[];
+  downvotes: mongoose.Schema.Types.ObjectId[];
+  author: mongoose.Schema.Types.ObjectId;
+  answers: mongoose.Schema.Types.ObjectId[];
+  createdAt: Date;
+};
 
- const Cart = async ({question}:{question: IQuestion}) => {
-const author: any = await getUserById(question.author); 
-const authName: string = author?.name || 'aakash'; 
+const Cart = async ({ question }: { question: QuestionType }) => {
+  const author: any = await getUserById(question.author!);
+  const authName: string = author?.name || "aakash";
 
   return (
 

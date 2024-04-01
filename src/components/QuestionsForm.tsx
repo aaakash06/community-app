@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
 import { QuestionSchema } from "@/lib/formSchema";
 import Image from "next/image";
@@ -100,8 +100,12 @@ console.log('error occured during submiting the question form')
   };
 
 
-  function handleTagRemove(field, name){
-    console.log('remove was called')
+  function handleTagRemove(field : ControllerRenderProps<{
+    title: string;
+    content: string;
+    tags: string[];
+}, "tags">, name: string){
+    // console.log('remove was called')
  const newFieldValue = field.value.filter(tag=> tag!==name)
 form.setValue('tags',newFieldValue)
 

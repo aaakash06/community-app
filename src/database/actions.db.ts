@@ -81,7 +81,7 @@ export async function postQuestion(data : QuestionInterface) {
   // console.log('hello')
 }
 
-export const getAllQuestions = async (): Partial<QuestionType>=> {
+export const getAllQuestions = async ()=> {
   try {
     await connectToDB();
     let allQuestions = await Question.find();
