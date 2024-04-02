@@ -84,7 +84,7 @@ export async function postQuestion(data : QuestionInterface) {
 export const getAllQuestions = async ()=> {
   try {
     await connectToDB();
-    let allQuestions = await Question.find();
+    let allQuestions = await Question.find().sort({createdAt: -1});
     // console.log(allQuestions)
     return allQuestions;
   } catch (err) {
