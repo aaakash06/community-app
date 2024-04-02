@@ -144,7 +144,7 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
               <FormControl>
                 <div>
                   <Editor
-                    apiKey={process.env.API_KEY}
+                    apiKey="6ft0u8cgpu0qthcgv7af8xi2hf20bq5hbg24gyxshx7qhyfx"
                     onBlur={field.onBlur}
                     onEditorChange={(content) => field.onChange(content)}
                     onInit={(evt, editor) => {
@@ -153,7 +153,7 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
                     }}
                     initialValue=""
                     init={{
-                      height: 300,
+                      height: 400,
                       menubar: false,
                       plugins: [
                         "advlist",
