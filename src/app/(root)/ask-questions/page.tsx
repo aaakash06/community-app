@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useFormState } from "react-dom";
 
@@ -13,17 +12,13 @@ import { auth } from "@clerk/nextjs";
 //   return postQuestion(data);
 // }
 
-const AskQuestion =  async () => {
+const AskQuestion = async () => {
+  const { userId } = auth();
 
-// const clerkUser = auth(); 
-// console.log(clerkUser)
-const clerkId = '123456'; 
-
-const dbUser  = await getUserByClerkId(clerkId); 
-// console.log(dbUser)
+  const dbUser = await getUserByClerkId(userId!);
+  // console.log(dbUser)
 
   // let initialState = {};
-
 
   // function callFunct(currState, formData) {
   //   router.push("/");
@@ -35,8 +30,10 @@ const dbUser  = await getUserByClerkId(clerkId);
 
   return (
     <div>
-      <h1 className="h1-bold mb-10 text-dark-100 dark:text-light-900">Ask a Question</h1>
-   <QuestionsForm dbUserId={ JSON.stringify(dbUser._id)} ></QuestionsForm>
+      <h1 className="h1-bold mb-10 text-dark-100 dark:text-light-900">
+        Ask a Question
+      </h1>
+      <QuestionsForm dbUserId={JSON.stringify(dbUser._id)}></QuestionsForm>
     </div>
   );
 };

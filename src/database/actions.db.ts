@@ -84,7 +84,7 @@ export async function postQuestion(data : QuestionInterface) {
 export const getAllQuestions = async ()=> {
   try {
     await connectToDB();
-    let allQuestions = await Question.find().sort({createdAt: -1});
+    let allQuestions = await Question.find().populate({path: 'tags', model: Tag}).sort({createdAt: -1});
     // console.log(allQuestions)
     return allQuestions;
   } catch (err) {
@@ -98,6 +98,10 @@ export const getUserByClerkId = async(id: string)=>{
 try{
 connectToDB(); 
 const user =await User.findOne({ clerkId: id }); 
+if(!user) {
+  const user =await User.findOne({ clerkId: "123456" }); 
+return user; 
+}
 return user; 
 
 }
@@ -129,4 +133,20 @@ return user;
   }
 
 
+}
+
+interface CreateUserClerkType {
+  clerkId: string,
+  name:  string ,
+  username  : string,
+  email: string,
+  picture: string,
+
+}
+
+export async function createUserByClerk(user : CreateUserClerkType){
+
+const mongoUser = await User.create(user); 
+
+return mongoUser; 
 }

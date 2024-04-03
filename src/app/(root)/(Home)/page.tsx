@@ -1,6 +1,6 @@
 // "use client";
 import React from "react";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, auth } from "@clerk/nextjs";
 import useTheme from "@/context/context";
 import Tag from "@/components/shared/TagComponent/Tag";
 import Image from "next/image";
@@ -15,6 +15,7 @@ import { getAllQuestions } from "@/database/actions.db";
 
 const Home = async () => {
   const questions = await getAllQuestions();
+
 
   return (
     <>
@@ -34,7 +35,9 @@ const Home = async () => {
 
       <div className="carts flex flex-col text-sm gap-10 mt-10 text-dark100_light900 ">
         {questions?.map((q) => {
-          return <Cart key={q._id} question={q}></Cart>;
+          return <Cart key={q._id} 
+          //@ts-ignore
+          question={q}></Cart>;
         })}
       </div>
     </>

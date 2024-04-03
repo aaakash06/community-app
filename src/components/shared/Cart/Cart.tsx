@@ -4,7 +4,7 @@ import React from 'react'
 import Tag from '../TagComponent/Tag'
 import Image from 'next/image'
 import { getTimeAgo,formatNumber } from '@/lib/utils'
-import { IQuestion } from '@/database/model.db'
+import { IQuestion, ITag } from '@/database/model.db'
 import { getUserById } from '@/database/actions.db'
 import mongoose from 'mongoose'
 
@@ -13,7 +13,7 @@ type QuestionType = {
   _id: mongoose.Schema.Types.ObjectId;
   title: string;
   content: string;
-  tags: mongoose.Schema.Types.ObjectId[];
+  tags: ITag[];
   views: number;
   upvotes: mongoose.Schema.Types.ObjectId[];
   downvotes: mongoose.Schema.Types.ObjectId[];
@@ -30,7 +30,7 @@ const Cart = async ({ question }: { question: QuestionType }) => {
 
 
   
-    <div className="flex flex-col gap-5 p-7 background-light900_dark200 rounded-lg shadow-md ">
+    <div className="flex flex-col gap-5 p-7 max-sm:px-2  background-light900_dark200 rounded-lg shadow-md ">
      <div className="flex items-center gap-1 md:hidden ">
             <Image className="invert dark:invert-0" alt="avatar" src="/assets/icons/avatar.svg" width={20} height={20}></Image>
             <span>{authName}<span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
@@ -38,9 +38,13 @@ const Cart = async ({ question }: { question: QuestionType }) => {
             </div>
           <h2 className="text-lg tracking-tighter line-clamp-1 h3-semi-bold"> {question.title} </h2>
           <div className="tags flex gap-3 max-sm:mr-4">
-            <Tag item="Mongoose" rounded="sm" otherStyle="max-sm:px-[10px]  px-2 max-sm:text-[10px]"/>
-            <Tag item="Mongoose" rounded="sm "  otherStyle="max-sm:px-[10px] px-2 max-sm:text-[10px]"/>
-            <Tag item="Mongoose" rounded="sm "  otherStyle="max-sm:px-[10px] px-2 max-sm:text-[10px]"/>
+{
+question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" otherStyle="max-sm:px-[10px]  px-2 max-sm:text-[10px]"/>  )
+
+}
+
+          
+         
           </div>
   
           <div className="bottom flex justify-between">
