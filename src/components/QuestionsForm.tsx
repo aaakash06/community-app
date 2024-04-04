@@ -44,14 +44,15 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
     try {
       const userId = JSON.parse(dbUserId);
       const data = { ...values, userId };
-      // console.log(data);
+      console.log(data);
       postQuestion(data);
       // console.log(userId)
     } catch (err) {
       console.log("error occured during submiting the question form");
     } finally {
-      setIsSubmitting(false);
       router.push("/");
+      setIsSubmitting(false);
+    
     }
     //  console.log(data)
   }
