@@ -55,10 +55,14 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType == "user.created") {
+
+    console.log('a webhook event has been triggered')
+
+
     const { username, email_addresses, first_name, last_name, image_url, id } =
       evt.data;
 
-    const usernameNull = username || "glorious servant";
+    const usernameNull = username || "glorious_servant";
 
     const newUser = {
       clerkId: id,
