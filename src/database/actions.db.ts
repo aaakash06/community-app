@@ -135,6 +135,18 @@ export async function createUserByClerk(user: CreateUserClerkType) {
     );
     
     console.log(user); 
+    await User.create({
+      clerkId: "clerk123",
+      name: "John Doe",
+      username: "johndoe123",
+      email: "johndoe@example.com",
+      password: "hashedPassword123",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      picture: "https://example.com/profile-picture.jpg",
+      location: "New York, USA",
+      portfolioWebSite: "https://johndoeportfolio.com",
+      reputation: 5,
+    })
   const mongoUser = await User.create(user); 
     return mongoUser;
   } catch (err) {
