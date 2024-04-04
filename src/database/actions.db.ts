@@ -133,6 +133,8 @@ export async function createUserByClerk(user: CreateUserClerkType) {
     console.log(
       "the control did reached the try block for creating userByclerk"
     );
+    
+    console.log(user); 
     const mongoUser = await User.create(user);
     return mongoUser;
   } catch (err) {
