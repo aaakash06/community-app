@@ -135,11 +135,8 @@ export async function createUserByClerk(user: CreateUserClerkType) {
     );
     
     console.log(user); 
-    const newDocument =  new User(user);
-    
-    // Save the document to the database
- await newDocument.save()
-    return newDocument;
+  const mongoUser = await User.create(user); 
+    return mongoUser;
   } catch (err) {
     console.log("couldn't create user in the database with clerkId");
     console.log(err);
