@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     const { username, email_addresses, first_name, last_name, image_url, id } =
       evt.data;
 
-      const usernameNull = username || 'glorious servant'
+    const usernameNull = username || "glorious servant";
 
     const newUser = {
       clerkId: id,
@@ -69,8 +69,8 @@ export async function POST(req: Request) {
     };
 
     const mongoUser = await createUserByClerk(newUser);
-
-    return NextResponse.json({ status: "ok", user: mongoUser });
+    if (mongoUser) return NextResponse.json({ status: "ok", user: mongoUser });
+    else return NextResponse.json({ statu: "error" });
   }
   if (eventType == "user.updated") {
   }

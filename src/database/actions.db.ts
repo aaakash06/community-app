@@ -129,6 +129,13 @@ interface CreateUserClerkType {
 }
 
 export async function createUserByClerk(user: CreateUserClerkType) {
-  const mongoUser = await User.create(user);
-  return mongoUser;
+  try {
+    const mongoUser = await User.create(user);
+    return mongoUser;
+  } catch (err) {
+    console.log("couldn't create user in the database with clerkId");
+    console.log(err);
+  } finally {
+    console.log("the control did reach finally block");
+  }
 }
