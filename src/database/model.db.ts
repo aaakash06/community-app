@@ -123,7 +123,13 @@ const questionSchema = new Schema<IQuestion>({
   const tagSchema = new Schema<ITag>({
     name: { type: String, required: true, unique: true },
     description: { type: String, default:"didn't provide any description" },
-    questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
+    questions:{
+type:  [{ type: Schema.Types.ObjectId, ref: 'Question' }],
+default: [],
+
+    }, 
+
+
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     createdOn: { type: Date, required: true, default: Date.now }
   });

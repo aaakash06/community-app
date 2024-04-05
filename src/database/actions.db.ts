@@ -2,7 +2,7 @@
 
 import { Question, Tag, User } from "./model.db";
 import { connectToDB } from "./connect.db";
-import { IQuestion } from "./model.db";
+import { IQuestion, ITag } from "./model.db";
 import { QuestionInterface } from "@/lib/formSchema";
 import mongoose, { mongo } from "mongoose";
 import { connect } from "http2";
@@ -25,7 +25,7 @@ type QuestionType = {
 export async function getAllUsers(){
   try {
     await connectToDB();
-    const users = await User.find();
+    const users = await User.find().sort({joinAt: -1});
 
     return users;
   } catch (err) {
@@ -41,6 +41,7 @@ export async function postQuestion(data: QuestionInterface) {
 
     const tagArray: mongoose.Schema.Types.ObjectId[] = [];
     const tagsArray: string[] = [...data.tags];
+    const tagDocs: ITag[] = []; 
     // console.log(data.tags)
 
     // let tagName;
@@ -51,25 +52,35 @@ export async function postQuestion(data: QuestionInterface) {
         console.log("seems tag has been found ");
         console.log(tagFound);
         tagArray.push(tagFound._id);
+        tagDocs.push(tagFound); 
         console.log("tag added to the array");
       } else {
         console.log("coudn't find the tag");
         console.log("creating new tag");
-        const newTag = await Tag.create({
+    const newTag  = await Tag.create({
           name: tagName,
         });
+        tagDocs.push(newTag); 
         tagArray.push(await newTag._id);
         console.log("new tag created");
       }
     }
 
-    console.log(tagArray);
+    // console.log(tagArray);
     const neww = await Question.create({
       ...data,
       tags: tagArray,
       author: data.userId,
     });
-    console.log(neww);
+
+    const {_id} = neww; 
+
+   for(let tagDoc of tagDocs){
+tagDoc.questions.push(_id); 
+await tagDoc.save(); 
+   }
+    
+    // console.log(neww);
     revalidatePath("/");
     //  return users;
   } catch (err) {
@@ -170,6 +181,18 @@ export async function updateUserByClerk(id:string, toUpdate:   {
     return mongoUser;
   } catch (err) {
     console.log("couldn't create user in the database with clerkId");
+    console.log(err);
+  } 
+}
+export async function getAllTags() {
+  try {
+    await connectToDB();
+const tags = Tag.find().sort({createdOn:-1}); 
+if(!tags) return []; 
+return tags; 
+ 
+  } catch (err) {
+    console.log("couldn't tag all tags");
     console.log(err);
   } 
 }

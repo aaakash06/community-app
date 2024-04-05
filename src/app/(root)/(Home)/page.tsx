@@ -15,9 +15,14 @@ import { getAllQuestions } from "@/database/actions.db";
 
 const Home = async () => {
   const questions = await getAllQuestions();
+if(questions?.length==0){
+  return(
+<p className="text-dark200_light900 text-center poppins"> There is no question to show</p>
 
+  )
+}
 
-  return (
+  else return (
     <>
       <div className="flex w-full  flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center mb-10 max-sm:mx-auto">
         <h1 className="h1-bold text-dark100_light900">All Questions</h1>

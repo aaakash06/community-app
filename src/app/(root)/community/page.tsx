@@ -21,12 +21,9 @@ const Community
 
 
   return (
-    <div>
+    <>
 <div className="flex w-full  flex-col justify-between gap-5 sm:flex-row sm:items-center mb-10">
 <h1 className="h1-bold text-dark100_light900">All Users</h1>  
-<Link href="/ask-questions">
-
-</Link>
 
       </div>
 
@@ -52,7 +49,7 @@ return( <UserCart key={user.name} user={user}></UserCart> )
 
 
 
-</div>
+</>
 
 
   )
