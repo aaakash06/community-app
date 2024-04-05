@@ -1,7 +1,7 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { createUserByClerk } from "@/database/actions.db";
+import { createUserByClerk, deleteUserByClerkId, updateUserByClerk } from "@/database/actions.db";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -56,30 +56,46 @@ export async function POST(req: Request) {
 
   if (eventType == "user.created") {
 
-    console.log('a webhook event has been triggered')
 
 
     const { username, email_addresses, first_name, last_name, image_url, id } =
       evt.data;
 
-    const usernameNull = username || "glorious_servant";
-
     const newUser = {
       clerkId: id,
       name: `${first_name + " " + last_name}`,
-      username: usernameNull,
+      username: username as string,
       email: email_addresses[0].email_address,
       picture: image_url,
     };
 
     const mongoUser = await createUserByClerk(newUser);
     if (mongoUser) return NextResponse.json({ status: "ok", user: mongoUser });
-    else return NextResponse.json({ statu: "error" });
+   return NextResponse.json({ statu: "error" });
   }
   if (eventType == "user.updated") {
+    const { username, email_addresses, first_name, last_name, image_url, id } =
+    evt.data;
+
+  const toUpdate= {
+    name: `${first_name + " " + last_name}`,
+    username: username as string,
+    email: email_addresses[0].email_address,
+    picture: image_url,
+  };
+
+  const mongoUser = await updateUserByClerk(id,toUpdate);
+  if (mongoUser) return NextResponse.json({ status: "ok", user: mongoUser });
+ return NextResponse.json({ statu: "error" });
+
   }
 
   if (eventType == "user.deleted") {
+    const { id } =  evt.data;
+const user = deleteUserByClerkId(id!); 
+if(user) return NextResponse.json({status: 'deleted', user: user}); 
+return NextResponse.json({ statu: "error" });
+
   }
 
   return new Response("", { status: 200 });

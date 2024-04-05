@@ -22,15 +22,15 @@ type QuestionType = {
   createdAt: Date;
 };
 
-export async function getAllUsers() {
+export async function getAllUsers(){
   try {
     await connectToDB();
     const users = await User.find();
-    // console.log('The Users are: ')
-    // console.log(users)
+
     return users;
   } catch (err) {
-    console.log("error occured during getting all users");
+    console.log('eror occured during fetching all users from db')
+    console.log(err)
   }
 }
 
@@ -98,12 +98,26 @@ export const getUserByClerkId = async (id: string) => {
     connectToDB();
     const user = await User.findOne({ clerkId: id });
     if (!user) {
-      const user = await User.findOne({ clerkId: "123456" });
+      const user = await User.findOne({ clerkId: "user_2ef9jMdNJEPcQjbIky6MBXJc79L" });
       return user;
     }
     return user;
   } catch (err) {
     console.log("error occured during fetching user by id ");
+  }
+};
+export const deleteUserByClerkId= async (id: string) => {
+  try {
+    connectToDB();
+    const user = await User.findOneAndDelete({ clerkId: id });
+    if (!user) {
+    console.log('no user found to delete in db')
+    return 'no user found to delete in db' 
+    }
+    return user;
+  } catch (err) {
+    console.log("error occured during fetching user and deleting by id ");
+    console.log(err); 
   }
 };
 
@@ -131,9 +145,7 @@ interface CreateUserClerkType {
 export async function createUserByClerk(user: CreateUserClerkType) {
   try {
     await connectToDB();
-    console.log(
-      "the control did reached the try block for creating userByclerk"
-    );
+
 
     console.log(user);
 
@@ -142,7 +154,25 @@ export async function createUserByClerk(user: CreateUserClerkType) {
   } catch (err) {
     console.log("couldn't create user in the database with clerkId");
     console.log(err);
-  } finally {
-    console.log("the control did reach finally block");
-  }
+  } 
 }
+export async function updateUserByClerk(id:string, toUpdate:   {
+  name: string; 
+  username: string; 
+  email: string; 
+  picture: string; 
+}  ) {
+  try {
+    await connectToDB();
+
+
+    const mongoUser = await User.findOneAndUpdate({clerkId: id}, toUpdate, {new: true});
+    return mongoUser;
+  } catch (err) {
+    console.log("couldn't create user in the database with clerkId");
+    console.log(err);
+  } 
+}
+
+
+

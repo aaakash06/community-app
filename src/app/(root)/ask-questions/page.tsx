@@ -5,6 +5,7 @@ import { getUserByClerkId, postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 import QuestionsForm from "@/components/QuestionsForm";
 import { auth } from "@clerk/nextjs";
+import { IUser } from "@/database/model.db";
 
 // function callFunc(currState, formData) {
 //   const data = Object.fromEntries(formData);
@@ -14,8 +15,9 @@ import { auth } from "@clerk/nextjs";
 
 const AskQuestion = async () => {
   const { userId } = auth();
-
+console.log(userId)
   const dbUser = await getUserByClerkId(userId!);
+
   // console.log(dbUser)
 
   // let initialState = {};

@@ -6,7 +6,7 @@ import { HomeFilter } from '@/constants/constants'
 import { getAllUsers } from '@/database/actions.db'
 import Link from 'next/link'
 import React from 'react'
-
+import { IUser } from '@/database/model.db'
 
 const filter = [
 'New Users',' Old Users', 'Top Contributors'
@@ -16,9 +16,9 @@ const filter = [
 
 const Community
  = async () => {
-  // const users = await getAllUsers(); 
+  //@ts-ignore
+  const users: IUser[] = await getAllUsers(); 
 
-  const users = [1,2,3,3,3,3]
 
   return (
     <div>
@@ -40,7 +40,7 @@ const Community
 {
 users?.map(user=>{
 
-return( <UserCart key={user}></UserCart> )
+return( <UserCart key={user.name} user={user}></UserCart> )
 
 })
 
