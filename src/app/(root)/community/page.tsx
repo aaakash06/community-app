@@ -21,13 +21,13 @@ const Community
 
 
   return (
-    <>
-<div className="flex w-full  flex-col justify-between gap-5 sm:flex-row sm:items-center mb-10">
+    <div>
+<div className="flex w-full  flex-col justify-between gap-5 sm:flex-row sm:items-center mb-10 ">
 <h1 className="h1-bold text-dark100_light900">All Users</h1>  
 
       </div>
 
-      <div className="mid flex gap-4  flex-row  ">
+      <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">
 
 <SearchBar/>
 <FilterDropDown items={filter} tags={false}></FilterDropDown>
@@ -43,13 +43,10 @@ return( <UserCart key={user.name} user={user}></UserCart> )
 
 }
 
-
-
 </div>
 
 
-
-</>
+</div>
 
 
   )

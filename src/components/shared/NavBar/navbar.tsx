@@ -9,7 +9,7 @@ import GlobalSearch from "./Gloabalsearch";
 
 const NavBar = () => {
   return (
-    <nav className=" flex items-center justify-between fixed z-[100] w-full gap-5 shadow-light-100 dark:shadow-none background-light900_dark200 p-6 sm:px-12">
+    <nav className=" flex items-center justify-between fixed z-[100] w-full gap-5 shadow-light-100 dark:shadow-none background-light900_dark200 p-6 sm:px-12 ">
       <Link href="/" className="flex gap-2 items-center">
         <Image alt="logo" src="/assets/images/site-logo.svg" width={23} height={50}></Image>
         <p className="h2-bold text-dark-100 dark:text-light-900 spaceGrotesk max-sm:hidden">
