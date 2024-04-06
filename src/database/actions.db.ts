@@ -199,3 +199,17 @@ return tags;
 
 
 
+export async function getQuestionById(qId: string) {
+  try {
+    // console.log(userId)
+    const question = await Question.findById(qId).populate({path: "tags" , model: Tag, select: 'name _id'}).populate({path: 'author', model: User});
+    // console.log('the required user is ')
+    //   console.log('user got')
+    // console.log(user)
+    return question;
+  } catch (err) {
+    console.log("not find user with the given id ");
+  }
+}
+
+

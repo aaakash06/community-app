@@ -4,6 +4,7 @@ import SearchBar from '@/components/shared/SearchBar/SearchBar'
 import { getAllTags } from '@/database/actions.db'
 import React from 'react'
 import { ITag } from '@/database/model.db'
+import Link from 'next/link'
 
 const arr = [ 'one', 'two','three']
 const filter = [
@@ -29,15 +30,28 @@ const allTags = await getAllTags() ;
 <FilterDropDown items={filter} tags={false}></FilterDropDown>
 
 </div>
-   
-<div className='mt-10 max-lg:w-[70%] max-md:w-[90%]  grid grid-cols-2 lg:grid-cols-3 gap-4 max-lg:gap-10'>
+
+
+
 {
-allTags?.map(tag=> <TagCart key={tag.name} tag={tag}></TagCart> )
+
+allTags?.length==0 ? (  <p className='text-xl h2-bold font-spaceGrotesk text-center mt-20 text-primary-500 w-full'> No tag Found</p>) :
+<div className='mt-10 max-lg:w-[70%] max-md:w-full  grid grid-cols-2 lg:grid-cols-3 gap-4 max-lg:gap-10'>
+
+
+  {
+
+
+allTags?.map(tag=> <Link href={`/tags/${tag._id}`} key={tag.name}> <TagCart  tag={tag}></TagCart></Link>  )
 
 }
 
 
 </div>
+
+}
+
+
 
    </div>
   )

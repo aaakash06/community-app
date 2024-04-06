@@ -32,14 +32,14 @@ const Cart = async ({ question }: { question: QuestionType }) => {
   
     <div className="flex flex-col gap-5 p-7 max-sm:px-2  background-light900_dark200 rounded-lg shadow-md ">
      <div className="flex items-center gap-1 md:hidden ">
-            <Image className="invert dark:invert-0" alt="avatar" src="/assets/icons/avatar.svg" width={20} height={20}></Image>
-            <span>{authName}<span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
+            <Image  alt="avatar" className='rounded-full' src={author.picture} width={25} height={20}></Image>
+            <span>{authName}<span className=""> - asked {getTimeAgo(question.createdAt)}</span> </span>
   
             </div>
           <h2 className="text-lg tracking-tighter line-clamp-1 h3-semi-bold"> {question.title} </h2>
           <div className="tags flex gap-3 max-sm:mr-4">
 {
-question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" otherStyle="max-sm:px-[10px]  px-2 max-sm:text-[10px]"/>  )
+question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" otherStyle="max-sm:px-[10px]   min-w-[4rem] px-1 py-[.05rem] max-sm:text-[10px]"/>  )
 
 }
 
@@ -47,15 +47,15 @@ question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" othe
          
           </div>
   
-          <div className="bottom flex justify-between">
+          <div className="bottom flex justify-between flex-wrap gap-y-5">
             <div className="flex items-center gap-1 max-md:hidden ">
-            <Image className="invert dark:invert-0" alt="avatar" src="/assets/icons/avatar.svg" width={20} height={20}></Image>
-            <span> {authName} <span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
+            <Image  alt="avatar" className='rounded-full' src={author.picture} width={25} height={20}></Image>
+            <span className=''> {authName} <span className="">- asked {getTimeAgo(question.createdAt)}</span> </span>
   
             </div>
        
   
-            <div className="stats flex gap-2 max-sm:gap-[15px]">
+            <div className="stats flex gap-2 items-center max-sm:gap-[15px]">
               <div className="like flex gap-1">
                 <Image
                   src="/assets/icons/like.svg"
@@ -86,6 +86,7 @@ question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" othe
             
             </div>
           </div>
+          
         </div>
   
   

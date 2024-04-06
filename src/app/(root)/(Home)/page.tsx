@@ -40,13 +40,14 @@ if(questions?.length==0){
 
       <div className="carts flex flex-col text-sm gap-10 mt-10 text-dark100_light900 ">
         {questions?.map((q) => {
-          return <Cart key={q._id} 
+          return <Link key={q._id} href={`questions/${q._id}`}> <Cart  
           //@ts-ignore
-          question={q}></Cart>;
+          question={q}></Cart></Link> 
         })}
+        
       </div>
     </>
-  );
+  )
 };
 
 export default Home;
