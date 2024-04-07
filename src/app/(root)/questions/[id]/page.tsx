@@ -7,12 +7,36 @@ import { HomeFilter } from "@/constants/constants";
 import FilterDropDown from '@/components/shared/Filter/Filter';
 import Link from 'next/link';
 import ParseHTML from '@/components/ParseHTML';
+import AnswerForm from '@/components/AnswerForm';
+import { IQuestion } from '@/database/model.db';
+
+
+// const answers = ({answer})=>{
+
+// return(
+// <>
+
+
+
+// {
+
+
+
+// }
+// </>
+
+
+// )
+
+// }
 
 
 const QuestionDetail = async ({params, searchParams}:{params: {id:string} ;  searchParams: any}) => {
 
-const question = await getQuestionById(params.id); 
-
+const question= await getQuestionById(params.id); 
+// console.log(question)
+const {answers  } = question; 
+// console.log(answers)
 // console.log(question)
   return (
 
@@ -50,7 +74,7 @@ upvote downvote
 
 <h2 className='h3-bold'> {question.title} </h2>
 
-<div className='flex gap-5 text-sm'>
+<div className='flex gap-5 max-sm:gap-3 text-sm max-sm:text-[12px]'>
 <div className="like flex gap-1">
 <Image  alt="avatar" className='rounded-full' src="/assets/icons/clock.svg" width={15} height={15}></Image> <span className="">   - asked {getTimeAgo(question.createdAt)}</span> 
               </div>
@@ -78,7 +102,7 @@ upvote downvote
 </div>
 
 
-<div className='bg-light-800 dark:bg-dark-200 rounded-sm p-5'>
+<div className='bg-light-800 dark:bg-dark-200 rounded-sm sm:p-5 max-sm:py-3'>
 <div className='mb-20  w-full'>  <ParseHTML content={question.content}></ParseHTML> </div>
 <div className="tags flex gap-3 max-sm:mr-4">
 {
@@ -96,13 +120,37 @@ question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" othe
 </div>
 
 <div className='flex justify-between items-center'>
-<span className='text-primary-500'> 5 answers</span>
+<span className='text-primary-500'> {answers.length} answers</span>
 <FilterDropDown items={HomeFilter}></FilterDropDown>
 </div>
+<div>
+{
 
-<div>answerssss</div>
-<div>answerssss</div>
-<div>answerssss</div>
+answers?.length ==0 ? (
+
+<h3> No answer has been posted for this question. Be the first one!!</h3>
+//@ts-ignore
+):   answers.map(ans =><div key={ans} className='mb-4 py-3 px-2 bg-light-800 dark:bg-dark-200 rounded-sm  w-full'>  <ParseHTML content={ans}></ParseHTML> </div> )
+
+
+
+
+
+}
+
+</div>
+<div>
+
+<div className='flex justify-between mb-10'>
+
+<span>Write your anwer here</span>
+
+<span>Generate AI answer</span>
+</div>
+
+<AnswerForm qId={params.id}/>
+
+</div>
 
     </div>
   )

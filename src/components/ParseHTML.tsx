@@ -32,7 +32,7 @@ const ParseHTML = ({ content }: { content: string }) => {
     Prism.highlightAll();
   }, []);
 
-  return <div className="text-sm">{parse(content)}</div>;
+  return <div className="text-sm ">{parse(content)}</div>;
 };
 
 export default ParseHTML;

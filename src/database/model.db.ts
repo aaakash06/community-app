@@ -1,46 +1,42 @@
-
-
-import mongoose,{Schema,Document} from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends mongoose.Document {
-    clerkId: string;
-    name: string;
-    username?: string;
-    email: string;
-    password?: string;
-    bio?: string;
-    picture: string;
-    location?: string;
-    portfolioWebSite?: string;
-    reputation?: number;
-    saved?: mongoose.Schema.Types.ObjectId[];
-    joinAt: Date;
-  }
+  clerkId: string;
+  name: string;
+  username?: string;
+  email: string;
+  password?: string;
+  bio?: string;
+  picture: string;
+  location?: string;
+  portfolioWebSite?: string;
+  reputation?: number;
+  saved?: mongoose.Schema.Types.ObjectId[];
+  joinAt: Date;
+}
 
-  export interface IQuestion extends mongoose.Document {
-    title: string;
-    content: string;
-    tags: mongoose.Schema.Types.ObjectId[];
-    views: number;
-    upvotes: mongoose.Schema.Types.ObjectId[];
-    downvotes: mongoose.Schema.Types.ObjectId[];
-    author: mongoose.Schema.Types.ObjectId;
-    answers: mongoose.Schema.Types.ObjectId[];
-    createdAt: Date;
-  }
+export interface IQuestion extends mongoose.Document {
+  title: string;
+  content: string;
+  tags: mongoose.Schema.Types.ObjectId[];
+  views: number;
+  upvotes: mongoose.Schema.Types.ObjectId[];
+  downvotes: mongoose.Schema.Types.ObjectId[];
+  author: mongoose.Schema.Types.ObjectId;
+  answers: string[];
+  createdAt: Date;
+}
 
-  export interface ITag extends Document {
-    name: string;
-    description?: string;
-    questions: Schema.Types.ObjectId[];
-    followers: Schema.Types.ObjectId[];
-    createdOn: Date;
-  }
-  
-
+export interface ITag extends Document {
+  name: string;
+  description?: string;
+  questions: Schema.Types.ObjectId[];
+  followers: Schema.Types.ObjectId[];
+  createdOn: Date;
+}
 
 const userSchema = new mongoose.Schema<IUser>({
-    clerkId: { type: String, required: true },
+  clerkId: { type: String, required: true },
   name: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -50,93 +46,81 @@ const userSchema = new mongoose.Schema<IUser>({
   location: { type: String },
   portfolioWebSite: { type: String },
   reputation: { type: Number, default: 0 },
-  saved: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
-  joinAt: { type: Date, default: Date.now }
+  saved: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
+  joinAt: { type: Date, default: Date.now },
 });
 
 const questionSchema = new Schema<IQuestion>({
-    title: {
-      type: String,
-      required: true
+  title: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  tags: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tag",
     },
-    content: {
-      type: String,
-      required: true
-    },
-    tags: [
+  ],
+  views: {
+    type: Number,
+    default: 0,
+  },
+  upvotes: {
+    type: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Tag'
-      }
+        ref: "User",
+      },
     ],
-    views: {
-      type: Number,
-      default: 0
-    },
-    upvotes: {
+    default: [],
+  },
+  downvotes: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    default: [],
+  },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  answers: {
+    // type: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'User'
+    //   }
+    // ],
+    type: [String],
+    default: [],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+const tagSchema = new Schema<ITag>({
+  name: { type: String, required: true, unique: true },
+  description: { type: String, default: "didn't provide any description" },
+  questions: {
+    type: [{ type: Schema.Types.ObjectId, ref: "Question" }],
+    default: [],
+  },
 
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: 'User'
-        }
-      ],
-      default: []
+  followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  createdOn: { type: Date, required: true, default: Date.now },
+});
 
-    }
-    ,
-    
-   
-    downvotes: {
+export const Tag = mongoose.models.Tag || mongoose.model("Tag", tagSchema);
 
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: 'User'
-        }
-      ],
-      default: []
+export const Question =
+  mongoose.models.Question || mongoose.model("Question", questionSchema);
 
-    }
-    ,
-    author: {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    answers: {
-
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: 'User'
-        }
-      ],
-      default: []
-
-    }
-    ,
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-  });
-  const tagSchema = new Schema<ITag>({
-    name: { type: String, required: true, unique: true },
-    description: { type: String, default:"didn't provide any description" },
-    questions:{
-type:  [{ type: Schema.Types.ObjectId, ref: 'Question' }],
-default: [],
-
-    }, 
-
-
-    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    createdOn: { type: Date, required: true, default: Date.now }
-  });
-
-export const Tag = mongoose.models.Tag ||  mongoose.model('Tag', tagSchema);
-
-export const Question = mongoose.models.Question || mongoose.model('Question', questionSchema);
-
-
-export const User = mongoose.models.User ||  mongoose.model('User', userSchema);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);

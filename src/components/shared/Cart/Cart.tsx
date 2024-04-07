@@ -30,13 +30,13 @@ const Cart = async ({ question }: { question: QuestionType }) => {
 
 
   
-    <div className="flex flex-col gap-5 p-7 max-sm:px-2  background-light900_dark200 rounded-lg shadow-md ">
+    <div className="flex flex-col gap-5 p-7 max-sm:px-4  background-light900_dark200 rounded-lg shadow-md ">
      <div className="flex items-center gap-1 md:hidden ">
             <Image  alt="avatar" className='rounded-full' src={author.picture} width={25} height={20}></Image>
             <span>{authName}<span className=""> - asked {getTimeAgo(question.createdAt)}</span> </span>
   
             </div>
-          <h2 className="text-lg tracking-tighter line-clamp-1 h3-semi-bold"> {question.title} </h2>
+          <h2 className="text-lg tracking-tighter max-sm:text-[18x] line-clamp-1 h3-semi-bold"> {question.title} </h2>
           <div className="tags flex gap-3 max-sm:mr-4">
 {
 question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" otherStyle="max-sm:px-[10px]   min-w-[4rem] px-1 py-[.05rem] max-sm:text-[10px]"/>  )

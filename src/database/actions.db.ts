@@ -213,3 +213,22 @@ export async function getQuestionById(qId: string) {
 }
 
 
+export async function postAnswer(qId: string, answer: string){
+
+  try {
+    
+
+    const question = await Question.findById(qId); 
+// console.log(question)
+ question.answers.push(answer);
+//  console.log(question) 
+await question.save(); 
+  // revalidatePath(`/questions/${qId}`)
+  } catch (err) {
+    console.log(" couldn't post the answer to the db");
+    console.log(err)
+  }
+
+
+}
+
