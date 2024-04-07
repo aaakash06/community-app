@@ -15,10 +15,10 @@ export const ThemeContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  let [mode, setMode] = useState("light");
+  let [mode, setMode] = useState("dark");
 
   function handleThemeChange() {
-    console.log("mode was changed");
+    // console.log("mode was changed");
     if (mode == "dark" || ( !("theme" in localStorage) ) && (window. matchMedia('(prefers-color-scheme: dark)').matches)  ) {
       localStorage.theme = "dark";
       document.documentElement.classList.add("dark");

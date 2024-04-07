@@ -26,11 +26,15 @@ if(questions?.length==0){
     <>
       <div className="flex w-full  flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center mb-10 max-sm:mx-auto">
         <h1 className="h1-bold text-dark100_light900 max-sm:text-[20px]">All Questions</h1>
-        <Link href="/ask-questions">
-          <Button className="primary-gradient text-light-900 float-right">
+        <div>
+
+        <Link href="/ask-questions" className="float-right ">
+          <Button className="primary-gradient text-light-900 ">
             Ask a Question
           </Button>
         </Link>
+        </div>
+        
       </div>
 
       <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">

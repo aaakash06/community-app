@@ -22,8 +22,11 @@ import { Input } from "@/components/ui/input";
 import Tag from "./shared/TagComponent/Tag";
 import { postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
+import useTheme from "@/context/context";
 
 const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
+  const {mode} = useTheme(); 
+
   const router = useRouter();
   let type = "submit";
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -177,7 +180,8 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
                         "codesample | bold italic forecolor | alignleft aligncenter " +
                         "alignright alignjustify | bullist numlist ",
                       content_style:
-                        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }  ",
+                        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }  ", skin: mode == "dark" ? "oxide-dark" : "oxide",
+                        content_css: mode == "dark" ? "dark" : "light",
                     }}
                   />
                 </div>

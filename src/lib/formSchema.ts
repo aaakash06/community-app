@@ -9,7 +9,7 @@ export const QuestionSchema = z.object({
     .max(3, { message: "Can not add more tags than 3" }),
 });
 export const AnswerSchema = z.object({
-  content: z.string().max(1000),
+  content: z.string().min(1).max(1000),
 });
 
 export interface QuestionInterface {

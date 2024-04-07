@@ -15,7 +15,7 @@ import { IUser } from "@/database/model.db";
 
 const AskQuestion = async () => {
   const { userId } = auth();
-console.log(userId)
+// console.log(userId)
   const dbUser = await getUserByClerkId(userId!);
 
   // console.log(dbUser)

@@ -6,7 +6,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
-import {  AnswerSchema } from "@/lib/formSchema";
+import { AnswerSchema } from "@/lib/formSchema";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,8 +22,10 @@ import { Input } from "@/components/ui/input";
 import Tag from "./shared/TagComponent/Tag";
 import { postAnswer, postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
+import useTheme from "@/context/context";
 
-const AnswerForm = ({ qId }: { qId: string }) => {
+const AnswerForm = ({ qId, userId }: { qId: string; userId: string }) => {
+  const { mode } = useTheme();
   const router = useRouter();
   let type = "submit";
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -32,9 +34,7 @@ const AnswerForm = ({ qId }: { qId: string }) => {
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
     defaultValues: {
-    
       content: "",
-   
     },
   });
 
@@ -42,9 +42,12 @@ const AnswerForm = ({ qId }: { qId: string }) => {
   async function onSubmit(values: z.infer<typeof AnswerSchema>) {
     setIsSubmitting(true);
     try {
-    
-      await postAnswer(qId, values.content);
-
+      await postAnswer(qId, userId, values.content);
+      form.reset();
+      if (editorRef.current) {
+        const editor = editorRef.current as any;
+        editor.setContent("");
+      }
     } catch (err) {
       console.log("error occured during submiting the question form");
     } finally {
@@ -56,26 +59,22 @@ const AnswerForm = ({ qId }: { qId: string }) => {
     //  console.log(data)
   }
 
-  
   const editorRef = useRef(null);
-  console.log(editorRef)
+  console.log(editorRef);
   const log = () => {
     if (editorRef.current) {
       // console.log(editorRef.current.getContent());
     }
   };
 
- 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-       
         <FormField
           control={form.control}
           name="content"
           render={({ field }) => (
             <FormItem>
-             
               <FormControl>
                 <div>
                   <Editor
@@ -113,32 +112,37 @@ const AnswerForm = ({ qId }: { qId: string }) => {
                         "alignright alignjustify | bullist numlist ",
                       content_style:
                         "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }  ",
+                      skin: mode == "dark" ? "oxide-dark" : "oxide",
+                      content_css: mode == "dark" ? "dark" : "light",
                     }}
                   />
                 </div>
               </FormControl>
               <FormDescription className="text-blue-400 text-[12px] dark:text-white ">
-               Give your Answer
+                Give your Answer
               </FormDescription>
               <FormMessage className=" text-red-500" />
             </FormItem>
           )}
         />
-     
 
         <Button
           type="submit"
-          className="primary-gradient py-1 text-white px-6 mt-10"
+          className="primary-gradient  py-1 text-white px-6 mt-10"
           disabled={isSubmitting}
         >
           Submit the Question
         </Button>
 
-        {isSubmitting ?   <div className="text-[12px] dark:text-white text-blue-500">
-              Posting...
-            </div> :   <div className="text-[12px] dark:text-white text-blue-500">
-              Answer 
-            </div>}
+        {isSubmitting ? (
+          <div className="text-[12px] dark:text-white text-blue-500">
+            Posting...
+          </div>
+        ) : (
+          <div className="text-[12px] dark:text-white text-blue-500">
+            Answer
+          </div>
+        )}
       </form>
     </Form>
   );

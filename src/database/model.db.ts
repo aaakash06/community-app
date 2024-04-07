@@ -23,7 +23,7 @@ export interface IQuestion extends mongoose.Document {
   upvotes: mongoose.Schema.Types.ObjectId[];
   downvotes: mongoose.Schema.Types.ObjectId[];
   author: mongoose.Schema.Types.ObjectId;
-  answers: string[];
+  answers: mongoose.Schema.Types.ObjectId[];
   createdAt: Date;
 }
 
@@ -33,6 +33,16 @@ export interface ITag extends Document {
   questions: Schema.Types.ObjectId[];
   followers: Schema.Types.ObjectId[];
   createdOn: Date;
+}
+
+export interface IAnswer extends Document{
+  upvotes: mongoose.Schema.Types.ObjectId[];
+  downvotes: mongoose.Schema.Types.ObjectId[];
+  author: mongoose.Schema.Types.ObjectId;
+  content: string;
+  question: mongoose.Schema.Types.ObjectId; 
+  createdAt: Date;
+
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -92,13 +102,13 @@ const questionSchema = new Schema<IQuestion>({
     ref: "User",
   },
   answers: {
-    // type: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'User'
-    //   }
-    // ],
-    type: [String],
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Answer'
+      }
+    ],
+
     default: [],
   },
   createdAt: {
@@ -118,9 +128,44 @@ const tagSchema = new Schema<ITag>({
   createdOn: { type: Date, required: true, default: Date.now },
 });
 
+const AnswerSchema = new mongoose.Schema<IAnswer>({
+author: {
+type: mongoose.Schema.Types.ObjectId,
+ref: 'User'
+},
+content: String,
+upvotes: {type: [
+  {
+    type: Schema.Types.ObjectId,
+    ref: "Answer",
+  },
+],
+default: [],}
+,
+downvotes: {type: [
+  {
+    type: Schema.Types.ObjectId,
+    ref: "Answer",
+  },
+],
+default: [],}
+,
+question:{
+  type: mongoose.Schema.Types.ObjectId, 
+  ref: "Question"
+}
+,
+createdAt: {
+  type: Date,
+  default: Date.now
+}
+})
+
+
 export const Tag = mongoose.models.Tag || mongoose.model("Tag", tagSchema);
 
 export const Question =
   mongoose.models.Question || mongoose.model("Question", questionSchema);
 
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
+export const Answer = mongoose.models.Answer || mongoose.model("Answer", AnswerSchema); 

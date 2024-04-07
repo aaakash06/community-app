@@ -1,6 +1,6 @@
 "use server";
 
-import { Question, Tag, User } from "./model.db";
+import { Answer, Question, Tag, User } from "./model.db";
 import { connectToDB } from "./connect.db";
 import { IQuestion, ITag } from "./model.db";
 import { QuestionInterface } from "@/lib/formSchema";
@@ -144,6 +144,18 @@ export async function getUserById(userId: mongoose.Schema.Types.ObjectId) {
     console.log("not find user with the given id ");
   }
 }
+export async function getUserNameById(userId: mongoose.Schema.Types.ObjectId) {
+  try {
+    // console.log(userId)
+    const user = await User.findById(userId);
+    // console.log('the required user is ')
+    //   console.log('user got')
+    // console.log(user)
+    return user.name;
+  } catch (err) {
+    console.log("not find user with the given id ");
+  }
+}
 
 interface CreateUserClerkType {
   clerkId: string;
@@ -202,7 +214,8 @@ return tags;
 export async function getQuestionById(qId: string) {
   try {
     // console.log(userId)
-    const question = await Question.findById(qId).populate({path: "tags" , model: Tag, select: 'name _id'}).populate({path: 'author', model: User});
+    const question = await Question.findById(qId).populate({path: "tags" , model: Tag, select: 'name _id'}).populate({path: 'author', model: User}).populate({path: 'answers', model: Answer});
+  // console.log(question); 
     // console.log('the required user is ')
     //   console.log('user got')
     // console.log(user)
@@ -213,11 +226,13 @@ export async function getQuestionById(qId: string) {
 }
 
 
-export async function postAnswer(qId: string, answer: string){
+export async function postAnswer(qId: string, userId: string,  answerr: string){
 
   try {
-    
-
+    const authorId = JSON.parse(userId); 
+    console.log(userId)
+    console.log(authorId)
+const answer = await Answer.create({author: authorId, content: answerr, question: qId })
     const question = await Question.findById(qId); 
 // console.log(question)
  question.answers.push(answer);

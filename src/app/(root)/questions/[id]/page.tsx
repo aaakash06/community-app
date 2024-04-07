@@ -1,4 +1,4 @@
-import { getQuestionById, getUserById } from '@/database/actions.db';
+import { getQuestionById, getUserByClerkId, getUserById } from '@/database/actions.db';
 import React from 'react'
 import Image from 'next/image';
 import { formatNumber, getTimeAgo } from '@/lib/utils';
@@ -8,8 +8,10 @@ import FilterDropDown from '@/components/shared/Filter/Filter';
 import Link from 'next/link';
 import ParseHTML from '@/components/ParseHTML';
 import AnswerForm from '@/components/AnswerForm';
-import { IQuestion } from '@/database/model.db';
-
+import { IAnswer, IQuestion } from '@/database/model.db';
+import { auth } from '@clerk/nextjs';
+import mongoose from 'mongoose';
+import AnswerCart from '@/components/AnswerCart';
 
 // const answers = ({answer})=>{
 
@@ -30,17 +32,26 @@ import { IQuestion } from '@/database/model.db';
 
 // }
 
+async function getUserName(userId: mongoose.Schema.Types.ObjectId){
+const {name} =await getUserById(userId)
+return name; 
+}
+
 
 const QuestionDetail = async ({params, searchParams}:{params: {id:string} ;  searchParams: any}) => {
+  const { userId } = auth();
+  // console.log(userId)
+    const dbUser = await getUserByClerkId(userId!);
 
 const question= await getQuestionById(params.id); 
 // console.log(question)
-const {answers  } = question; 
+const {answers} : IAnswer[] | any = question; 
+
 // console.log(answers)
 // console.log(question)
   return (
 
-    <div className='flex flex-col gap-10 dark:text-white'>
+    <div className='flex flex-col gap-10 dark:text-white font-poppins'>
 
 <div className='flex justify-between'>
   <div className='flex gap-2'>
@@ -102,7 +113,7 @@ upvote downvote
 </div>
 
 
-<div className='bg-light-800 dark:bg-dark-200 rounded-sm sm:p-5 max-sm:py-3'>
+<div className='bg-light-800 dark:bg-dark-200 rounded-sm sm:p-5 max-sm:pl-4 max-sm:py-5'>
 <div className='mb-20  w-full'>  <ParseHTML content={question.content}></ParseHTML> </div>
 <div className="tags flex gap-3 max-sm:mr-4">
 {
@@ -124,13 +135,15 @@ question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" othe
 <FilterDropDown items={HomeFilter}></FilterDropDown>
 </div>
 <div>
+
+
 {
 
 answers?.length ==0 ? (
 
 <h3> No answer has been posted for this question. Be the first one!!</h3>
-//@ts-ignore
-):   answers.map(ans =><div key={ans} className='mb-4 py-3 px-2 bg-light-800 dark:bg-dark-200 rounded-sm  w-full'>  <ParseHTML content={ans}></ParseHTML> </div> )
+// @ts-ignore
+):   answers.map(ans =><div key={ans} className='mt-5 flex flex-col gap-2' >  <AnswerCart ans={ans}></AnswerCart>  </div> )
 
 
 
@@ -141,14 +154,18 @@ answers?.length ==0 ? (
 </div>
 <div>
 
-<div className='flex justify-between mb-10'>
+<div className='flex justify-between mb-10 items-center max-sm:text-[14px]'>
 
 <span>Write your anwer here</span>
 
-<span>Generate AI answer</span>
+<div className='flex items-center gap-1 text-primary-500'>
+<Image alt="star" src="/assets/icons/star-red.svg" width={15} height={15}></Image>
+
+<span>Generate AI answers</span>
+</div>
 </div>
 
-<AnswerForm qId={params.id}/>
+<AnswerForm qId={params.id} userId={JSON.stringify(dbUser._id)}/>
 
 </div>
 
