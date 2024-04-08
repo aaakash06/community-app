@@ -216,7 +216,7 @@ export async function getQuestionById(qId: string) {
 
     // console.log(typeof qId)
     const question = await Question.findById(qId).populate({path: "tags" , model: Tag, select: 'name _id'}).populate({path: 'author', model: User}).populate({path: 'answers', model: Answer});
-  console.log(question); 
+  // console.log(question); 
 
     // console.log('the required user is ')
     //   console.log('user got')
@@ -232,13 +232,13 @@ export async function postAnswer(qId: string, userId: string,  answerr: string){
 
   try {   await connectToDB();
     const authorId = JSON.parse(userId); 
-    console.log(userId)
-    console.log(authorId)
+    // console.log(userId)
+    // console.log(authorId)
 const answer = await Answer.create({author: authorId, content: answerr, question: qId })
     const question = await Question.findById(qId); 
-console.log(question)
+// console.log(question)
  question.answers.push(answer);
- console.log(question) 
+//  console.log(question) 
 await question.save(); 
   // revalidatePath(`/questions/${qId}`)
   } catch (err) {

@@ -60,7 +60,7 @@ const QuestionDetail = async ({
   return (
     <div className="flex flex-col gap-10 dark:text-white font-poppins">
       <div className="flex justify-between">
-        <div className="flex gap-2">
+        <div className="flex gap-2 ">
           <Link
             href={`/community`}
             className="flex items-center justify-start gap-2"
@@ -72,7 +72,7 @@ const QuestionDetail = async ({
               width={22}
               height={22}
             />
-            <p className="paragraph-semibold text-sm text-dark300_light700">
+            <p className="paragraph-semibold text-sm text-dark300_light700 line-clamp-1">
               {question.author.name}
             </p>
           </Link>

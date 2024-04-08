@@ -37,7 +37,7 @@ const Voting = (
   // i should retrive the q from here??
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center ">
       {includesUpvotes ? (
         <button
           title="click"
