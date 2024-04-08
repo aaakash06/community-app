@@ -15,8 +15,13 @@ import { IUser } from "@/database/model.db";
 
 const AskQuestion = async () => {
   const { userId } = auth();
+
+
 // console.log(userId)
-  const dbUser = await getUserByClerkId(userId!);
+
+  const dbUser = userId?  await getUserByClerkId(userId!) : null;
+
+
 
   // console.log(dbUser)
 
@@ -35,7 +40,7 @@ const AskQuestion = async () => {
       <h1 className="h1-bold mb-10 text-dark-100 dark:text-light-900">
         Ask a Question
       </h1>
-      <QuestionsForm dbUserId={JSON.stringify(dbUser._id)}></QuestionsForm>
+      <QuestionsForm dbUserId={ dbUser?  JSON.stringify(dbUser._id): null}></QuestionsForm>
     </div>
   );
 };

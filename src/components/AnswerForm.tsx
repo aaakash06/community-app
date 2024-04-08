@@ -24,7 +24,7 @@ import { postAnswer, postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 import useTheme from "@/context/context";
 
-const AnswerForm = ({ qId, userId }: { qId: string; userId: string }) => {
+const AnswerForm = ({ qId, userId }: { qId: string; userId: string|null }) => {
   const { mode } = useTheme();
   const router = useRouter();
   let type = "submit";
@@ -40,7 +40,9 @@ const AnswerForm = ({ qId, userId }: { qId: string; userId: string }) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof AnswerSchema>) {
-    setIsSubmitting(true);
+    if(userId==null) router.push('/sign-up')
+else{
+  setIsSubmitting(true);
     try {
       await postAnswer(qId, userId, values.content);
       form.reset();
@@ -57,10 +59,12 @@ const AnswerForm = ({ qId, userId }: { qId: string; userId: string }) => {
       // form.setValue('content','')
     }
     //  console.log(data)
+}
+  
   }
 
   const editorRef = useRef(null);
-  console.log(editorRef);
+  // console.log(editorRef);
   const log = () => {
     if (editorRef.current) {
       // console.log(editorRef.current.getContent());

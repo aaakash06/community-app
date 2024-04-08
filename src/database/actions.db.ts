@@ -6,7 +6,6 @@ import { IQuestion, ITag } from "./model.db";
 import { QuestionInterface } from "@/lib/formSchema";
 import mongoose, { mongo } from "mongoose";
 import { connect } from "http2";
-import { useId } from "react";
 import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
 
@@ -114,7 +113,7 @@ export const getUserByClerkId = async (id: string) => {
     }
     return user;
   } catch (err) {
-    console.log("error occured during fetching user by id ");
+    console.log("error occured during fetching user by clerk id ");
   }
 };
 export const deleteUserByClerkId= async (id: string) => {
@@ -134,26 +133,27 @@ export const deleteUserByClerkId= async (id: string) => {
 
 export async function getUserById(userId: mongoose.Schema.Types.ObjectId) {
   try {
-    // console.log(userId)
+    // console.log(userId)   await connectToDB();
     const user = await User.findById(userId);
     // console.log('the required user is ')
     //   console.log('user got')
     // console.log(user)
     return user;
   } catch (err) {
-    console.log("not find user with the given id ");
+    console.log("not find user with the given user id ");
   }
 }
 export async function getUserNameById(userId: mongoose.Schema.Types.ObjectId) {
   try {
     // console.log(userId)
+       await connectToDB();
     const user = await User.findById(userId);
     // console.log('the required user is ')
     //   console.log('user got')
     // console.log(user)
     return user.name;
   } catch (err) {
-    console.log("not find user with the given id ");
+    console.log("not find username with the given id ");
   }
 }
 
@@ -212,31 +212,33 @@ return tags;
 
 
 export async function getQuestionById(qId: string) {
-  try {
-    // console.log(userId)
+  try {   await connectToDB();
+
+    // console.log(typeof qId)
     const question = await Question.findById(qId).populate({path: "tags" , model: Tag, select: 'name _id'}).populate({path: 'author', model: User}).populate({path: 'answers', model: Answer});
-  // console.log(question); 
+  console.log(question); 
+
     // console.log('the required user is ')
     //   console.log('user got')
     // console.log(user)
     return question;
   } catch (err) {
-    console.log("not find user with the given id ");
+    console.log("not find question with the given id ");
   }
 }
 
 
 export async function postAnswer(qId: string, userId: string,  answerr: string){
 
-  try {
+  try {   await connectToDB();
     const authorId = JSON.parse(userId); 
     console.log(userId)
     console.log(authorId)
 const answer = await Answer.create({author: authorId, content: answerr, question: qId })
     const question = await Question.findById(qId); 
-// console.log(question)
+console.log(question)
  question.answers.push(answer);
-//  console.log(question) 
+ console.log(question) 
 await question.save(); 
   // revalidatePath(`/questions/${qId}`)
   } catch (err) {
@@ -246,4 +248,194 @@ await question.save();
 
 
 }
+
+
+//objectId -> stringify -> string-> parse -> string ; here userId
+
+interface VoteParam {
+
+    upvotes: number;
+    downvotes: number;
+    includesUpvotes: boolean; 
+    includesDownvotes: boolean; 
+    userId: string | null;
+    qId: string;
+    hasSaved?: boolean;
+answer? : boolean; 
+
+}
+
+export async function handleVote(params: VoteParam  , type: string) {
+  try {
+    await connectToDB();
+    const { userId, qId,  includesDownvotes ,includesUpvotes, answer=false} = params;
+    if(!answer){
+    
+      //,{ $push: { upvotes: JSON.parse(userId)} }
+      // const includesUpvote = question?.upvotes.includes(userId)
+      // const includesDownvote = question?.downvotes.includes(userId)
+      
+      
+      
+      if(!includesUpvotes && !includesDownvotes && type== 'upvote') {
+        const question= await Question.findByIdAndUpdate(qId, { $push: { upvotes: JSON.parse(userId!) }}, {new: true});
+      // question?.upvotes.push(JSON.parse(userId!)); 
+      // question?.save(); 
+      // console.log(question)
+      }
+      else if(!includesUpvotes && !includesDownvotes && type== 'downvote') {
+      
+        const question= await Question.findByIdAndUpdate(qId, { $push: { downvotes: JSON.parse(userId!) }}, {new: true});
+        // console.log(question)
+      }
+      
+      
+      else if(includesUpvotes && !includesDownvotes && type== 'upvote') {
+        console.log('remove upvote')
+        const question= await Question.findByIdAndUpdate(qId, { $pull :{ upvotes: JSON.parse(userId!) }}, {new: true});
+      }
+      
+      else if(!includesUpvotes && includesDownvotes && type== 'upvote') {
+        console.log('remove upvote and add downvote')
+      
+      const question= await Question.findByIdAndUpdate(qId,{$push: { upvotes: JSON.parse(userId!) },$pull: { downvotes: JSON.parse(userId!) }}, {new: true});
+      // console.log(question)
+      }
+      
+      
+      
+      else if(includesUpvotes && !includesDownvotes && type== 'downvote') {
+        console.log('remove upvote')
+        const question= await Question.findByIdAndUpdate(qId,{$pull: { upvotes: JSON.parse(userId!) },$push: { downvotes: JSON.parse(userId!) }}, {new: true});
+      
+        // console.log(question)
+      }
+      
+      else if (!includesUpvotes && includesDownvotes && type== 'downvote') 
+      {
+        console.log('remove upvote and add downvote')
+        const question= await Question.findByIdAndUpdate(qId, { $pull :{ downvotes: JSON.parse(userId!) }}, {new: true});
+      
+        // console.log(question)
+      }
+      
+
+    }
+    else{
+
+
+    
+//,{ $push: { upvotes: JSON.parse(userId)} }
+// const includesUpvote = question?.upvotes.includes(userId)
+// const includesDownvote = question?.downvotes.includes(userId)
+
+
+
+if(!includesUpvotes && !includesDownvotes && type== 'upvote') {
+  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $push: { upvotes: JSON.parse(userId!) }}, {new: true});
+// question?.upvotes.push(JSON.parse(userId!)); 
+// question?.save(); 
+// console.log(question)
+}
+else if(!includesUpvotes && !includesDownvotes && type== 'downvote') {
+
+  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $push: { downvotes: JSON.parse(userId!) }}, {new: true});
+  // console.log(question)
+}
+
+
+else if(includesUpvotes && !includesDownvotes && type== 'upvote') {
+  console.log('remove upvote')
+  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $pull :{ upvotes: JSON.parse(userId!) }}, {new: true});
+}
+
+else if(!includesUpvotes && includesDownvotes && type== 'upvote') {
+  console.log('remove upvote and add downvote')
+
+const answer= await Answer.findByIdAndUpdate(JSON.parse(qId),{$push: { upvotes: JSON.parse(userId!) },$pull: { downvotes: JSON.parse(userId!) }}, {new: true});
+// console.log(question)
+}
+
+
+
+else if(includesUpvotes && !includesDownvotes && type== 'downvote') {
+  console.log('remove upvote')
+  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId),{$pull: { upvotes: JSON.parse(userId!) },$push: { downvotes: JSON.parse(userId!) }}, {new: true});
+
+  // console.log(question)
+}
+
+else if (!includesUpvotes && includesDownvotes && type== 'downvote') 
+{
+  console.log('remove upvote and add downvote')
+  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $pull :{ downvotes: JSON.parse(userId!) }}, {new: true});
+
+  // console.log(question)
+}
+
+    }
+    
+
+// if(includes){
+//   let  {upvotes}  = question; 
+//   upvotes  = upvotes.filter(el  => el!==userId )!; 
+//   console.log(upvotes)
+// question.upvotes = upvotes; 
+// console.log(upvotes)
+// question?.save(); 
+
+// }
+// else{
+
+
+// }
+
+
+
+
+
+revalidatePath(`/questions/${qId}`)
+
+  } catch (err) {
+    console.log(err)
+    console.log("couldn't alter the upvote array");
+ 
+  }
+}
+
+
+
+///// suffered a lot due to this id prop drilling make sure to pass them in pure strong like in params.id or after passing the stringified object id do parse at the end
+
+
+
+export async function saveQuestion(qId: string, userId: string, type: string) {
+  try {   
+    await connectToDB();
+// console.log(qId)
+
+
+if(type=='save'){
+  const user = await User.findByIdAndUpdate(userId,{ $push: {saved:qId } },{new: true})
+  console.log('saved')
+  // console.log(user)
+}
+else{
+  const user = await User.findByIdAndUpdate(userId,{ $pull: {saved:qId } },{new: true})
+  console.log('unsaved')
+  // console.log(user)
+}
+
+// const user = await User.findById(JSON.parse(userId))
+//  console.log(user)
+revalidatePath(`/questions/${qId}`)
+
+  } catch (err) {
+ 
+    console.log(err)
+    console.log("couldn't save the question");
+  console.log(userId)
+  }
+}
+
 

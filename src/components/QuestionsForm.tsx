@@ -24,7 +24,7 @@ import { postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 import useTheme from "@/context/context";
 
-const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
+const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
   const {mode} = useTheme(); 
 
   const router = useRouter();
@@ -43,7 +43,10 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof QuestionSchema>) {
-    setIsSubmitting(true);
+
+if(dbUserId==null) router.push('/sign-up')
+else{
+  setIsSubmitting(true);
     try {
       const userId = JSON.parse(dbUserId);
       const data = { ...values, userId };
@@ -57,6 +60,8 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string }) => {
       setIsSubmitting(false);
     }
     //  console.log(data)
+}
+  
   }
 
   function handleTagKeyDown(

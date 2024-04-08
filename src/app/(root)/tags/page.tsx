@@ -6,7 +6,7 @@ import React from 'react'
 import { ITag } from '@/database/model.db'
 import Link from 'next/link'
 
-const arr = [ 'one', 'two','three']
+
 const filter = [
   'New Users',' Old Users', 'Top Contributors'
   ]
