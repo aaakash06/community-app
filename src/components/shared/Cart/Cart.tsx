@@ -22,15 +22,17 @@ type QuestionType = {
   createdAt: Date;
 };
 
+
 const Cart = async ({ question }: { question: QuestionType }) => {
   const author: any = await getUserById(question.author!);
   const authName: string = author?.name || "aakash";
+
 
   return (
 
 
   
-    <div className="flex flex-col gap-5 p-7 max-sm:px-4  background-light900_dark200 rounded-lg shadow-md ">
+    <div className="flex flex-col gap-5 p-7 max-sm:px-4  background-light900_dark200 rounded-lg shadow-md  ">
      <div className="flex items-center gap-1 md:hidden ">
             <Image  alt="avatar" className='rounded-full' src={author.picture} width={25} height={20}></Image>
             <span>{authName}<span className=""> - asked {getTimeAgo(question.createdAt)}</span> </span>

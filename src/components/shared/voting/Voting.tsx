@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import mongoose from "mongoose";
-import { handleVote, saveQuestion } from "@/database/actions.db";
+import { handleVote, increaseViewCount, saveQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 import { boolean } from "zod";
+import { usePathname } from "next/navigation";
 
 interface Prop {
   prop: {
@@ -30,11 +31,15 @@ const Voting = (
 
   const { upvotes, downvotes, userId, qId, hasSaved, includesDownvotes ,includesUpvotes, answer=false } = prop;
 
-
+const pathName = usePathname(); 
   const router = useRouter();
-  // console.log(qId);
+useEffect(()=>{
+  if(userId && !answer){
+    increaseViewCount(userId,qId,'view'); 
 
-  // i should retrive the q from here??
+  }
+
+}  ,[userId,router,qId])
 
   return (
     <div className="flex gap-2 items-center ">
@@ -51,8 +56,9 @@ const Voting = (
         >
           <Image
             src="/assets/icons/upvoted.svg"
-            width={20}
-            height={20}
+               width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
             alt="upvote"
           ></Image>
         </button>
@@ -68,8 +74,9 @@ const Voting = (
         >
           <Image
             src="/assets/icons/upvote.svg"
-            width={20}
-            height={20}
+               width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
             alt="upvote"
           ></Image>
         </button>
@@ -89,8 +96,9 @@ const Voting = (
         >
           <Image
             src="/assets/icons/downvoted.svg"
-            width={20}
-            height={20}
+               width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
             alt="upvote"
           ></Image>
         </button>
@@ -108,8 +116,9 @@ const Voting = (
         >
           <Image
             src="/assets/icons/downvote.svg"
-            width={20}
-            height={20}
+               width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
             alt="upvote"
           ></Image>
         </button>

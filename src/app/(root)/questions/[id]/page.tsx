@@ -91,8 +91,9 @@ const QuestionDetail = async ({
             alt="avatar"
             className="rounded-full"
             src="/assets/icons/clock.svg"
-            width={15}
-            height={15}
+          width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
           ></Image>{" "}
           <span className=""> - asked {getTimeAgo(question.createdAt)}</span>
         </div>
@@ -100,8 +101,9 @@ const QuestionDetail = async ({
         <div className="like flex gap-1">
           <Image
             src="/assets/icons/message.svg"
-            width={15}
-            height={15}
+              width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
             alt="like-svg"
           />
           <span>{formatNumber(question.answers.length)} Answers</span>
@@ -109,8 +111,9 @@ const QuestionDetail = async ({
         <div className="like flex gap-1">
           <Image
             src="/assets/icons/eye.svg"
-            width={15}
-            height={15}
+              width={0}
+          height={0}
+            style={{ width: 'auto', height: 'auto' }}
             alt="like-svg"
           />
           <span> {formatNumber(question.views)} views</span>

@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+export type ObjectIdType = mongoose.Schema.Types.ObjectId; 
 
 export interface IUser extends mongoose.Document {
   clerkId: string;
@@ -41,6 +42,16 @@ export interface IAnswer extends Document{
   author: mongoose.Schema.Types.ObjectId;
   content: string;
   question: mongoose.Schema.Types.ObjectId; 
+  createdAt: Date;
+
+}
+
+export interface IInteraction extends Document{
+
+  user: mongoose.Schema.Types.ObjectId;
+  type: string;
+  question: mongoose.Schema.Types.ObjectId; 
+  tags?: ObjectIdType[]; 
   createdAt: Date;
 
 }
@@ -161,8 +172,16 @@ createdAt: {
 }
 })
 
+const InteractionSchema = new mongoose.Schema<IInteraction>({
+user: { type : mongoose.Schema.Types.ObjectId  , ref: 'User', required: true},
+question: { type : mongoose.Schema.Types.ObjectId  , ref: 'Question', required: true},
+tags: [{ type : mongoose.Schema.Types.ObjectId  , ref: 'Question', }],
+type: String,
+createdAt: { type: Date, default: Date.now}
+})
 
 export const Tag = mongoose.models.Tag || mongoose.model("Tag", tagSchema);
+export const Interaction = mongoose.models.Interaction || mongoose.model("Interaction", InteractionSchema);
 
 export const Question =
   mongoose.models.Question || mongoose.model("Question", questionSchema);

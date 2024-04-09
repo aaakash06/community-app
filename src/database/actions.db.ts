@@ -1,6 +1,6 @@
 "use server";
 
-import { Answer, Question, Tag, User } from "./model.db";
+import { Answer, Interaction, Question, Tag, User } from "./model.db";
 import { connectToDB } from "./connect.db";
 import { IQuestion, ITag } from "./model.db";
 import { QuestionInterface } from "@/lib/formSchema";
@@ -8,6 +8,7 @@ import mongoose, { mongo } from "mongoose";
 import { connect } from "http2";
 import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
+import { Select } from "@radix-ui/react-select";
 
 type QuestionType = {
   title: string;
@@ -437,5 +438,46 @@ revalidatePath(`/questions/${qId}`)
   console.log(userId)
   }
 }
+
+
+export async function getSavedQuestions(userId: string){
+try{
+await connectToDB(); 
+const users = await User.findOne({clerkId: userId}).populate({path:'saved', model: Question, options: { sort: {createdAt: -1},}, populate: {path: 'tags', model: Tag, select: "_id name"}}); 
+// can also populate the author field
+return users.saved; 
+}
+catch(err){
+  console.log(err)
+console.log("couldn't get saved questions")
+
+}
+
+
+}
+export async function increaseViewCount(userId: string, qId: string,type: string){
+try{
+await connectToDB(); 
+const query = {user: JSON.parse(userId), question: qId, type, }; 
+await Question.findByIdAndUpdate(qId, { $inc: { views: 1} }); 
+const existingInteraction = await Interaction.findOne(query); 
+
+if(!existingInteraction) {
+  
+  const newInteraction = await Interaction.create(query); 
+
+
+}
+revalidatePath('/')
+revalidatePath(`/questions/${qId}`)
+}
+catch(err){
+  console.log(err)
+console.log("couldn't execute increaseViewCount")
+
+}
+
+}
+
 
 
