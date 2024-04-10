@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import useTheme from "@/context/context";
 
 const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
-  const {mode} = useTheme(); 
+  const { mode } = useTheme();
 
   const router = useRouter();
   let type = "submit";
@@ -43,25 +43,23 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof QuestionSchema>) {
-
-if(dbUserId==null) router.push('/sign-up')
-else{
-  setIsSubmitting(true);
-    try {
-      const userId = JSON.parse(dbUserId);
-      const data = { ...values, userId };
-      // console.log(data);
-      await postQuestion(data);
-      // console.log(userId)
-    } catch (err) {
-      console.log("error occured during submiting the question form");
-    } finally {
-      router.push("/");
-      setIsSubmitting(false);
+    if (dbUserId == null) router.push("/sign-up");
+    else {
+      setIsSubmitting(true);
+      try {
+        const userId = JSON.parse(dbUserId);
+        const data = { ...values, userId };
+        // console.log(data);
+        await postQuestion(data);
+        // console.log(userId)
+      } catch (err) {
+        console.log("error occured during submiting the question form");
+      } finally {
+        router.push("/");
+        setIsSubmitting(false);
+      }
+      //  console.log(data)
     }
-    //  console.log(data)
-}
-  
   }
 
   function handleTagKeyDown(
@@ -185,8 +183,9 @@ else{
                         "codesample | bold italic forecolor | alignleft aligncenter " +
                         "alignright alignjustify | bullist numlist ",
                       content_style:
-                        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }  ", skin: mode == "dark" ? "oxide-dark" : "oxide",
-                        content_css: mode == "dark" ? "dark" : "light",
+                        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }  ",
+                      skin: mode == "dark" ? "oxide-dark" : "oxide",
+                      content_css: mode == "dark" ? "dark" : "light",
                     }}
                   />
                 </div>
@@ -223,7 +222,10 @@ else{
                         key={tag}
                         onClick={() => handleTagRemove(field, tag)}
                       >
-                        <Tag item={tag} otherStyle="px-0"></Tag>{" "}
+                        <span className="shadow-sm  dark:bg-dark-400  dark:border-none p-1 px-1 bg-light-800 text-[11px] text-zinc-500  dark:text-sky-300 text-center">
+                          {" "}
+                          {tag}
+                        </span>
                         <Image
                           className="dark:invert"
                           src="/assets/icons/close.svg"

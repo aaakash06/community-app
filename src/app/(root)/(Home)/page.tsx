@@ -44,9 +44,9 @@ if(questions?.length==0){
 
       <div className="carts flex flex-col text-sm gap-10 mt-10 text-dark100_light900 ">
         {questions?.map((q) => {
-          return <Link key={q._id} href={`questions/${q._id}`}> <Cart  
+          return <Cart  key={q._id} 
           //@ts-ignore
-          question={q}></Cart></Link> 
+          question={q}></Cart>
         })}
         
       </div>

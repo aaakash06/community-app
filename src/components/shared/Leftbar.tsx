@@ -11,7 +11,7 @@ const LeftBar = () => {
 
   return (
     <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px] ">
-      <div className="flex flex-col text-light-900  gap-5 items-center">
+      <div className="flex flex-col text-light-900  gap-8 items-center">
         {sidebarLinks.map((item) => {
           let isActive =
             path == item.route ||
@@ -30,7 +30,7 @@ const LeftBar = () => {
               <Image
                 alt="lable"
                 src={item.imgURL}
-                width={20}
+                width={25}
                 height={20}
               ></Image>{" "}
               <p className="max-lg:hidden">{item.label}</p>{" "}

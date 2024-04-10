@@ -131,7 +131,7 @@ const QuestionDetail = async ({
             question.tags.map((tag) => (
               <Tag
                 key={tag.name}
-                item={tag.name}
+                item={tag}
                 rounded="sm"
                 otherStyle="max-sm:px-[10px]   px-4 "
               />

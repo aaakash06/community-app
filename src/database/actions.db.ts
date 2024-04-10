@@ -22,15 +22,15 @@ type QuestionType = {
   createdAt: Date;
 };
 
-export async function getAllUsers(){
+export async function getAllUsers() {
   try {
     await connectToDB();
-    const users = await User.find().sort({joinAt: -1});
+    const users = await User.find().sort({ joinAt: -1 });
 
     return users;
   } catch (err) {
-    console.log('eror occured during fetching all users from db')
-    console.log(err)
+    console.log("eror occured during fetching all users from db");
+    console.log(err);
   }
 }
 
@@ -41,7 +41,7 @@ export async function postQuestion(data: QuestionInterface) {
 
     const tagArray: mongoose.Schema.Types.ObjectId[] = [];
     const tagsArray: string[] = [...data.tags];
-    const tagDocs: ITag[] = []; 
+    const tagDocs: ITag[] = [];
     // console.log(data.tags)
 
     // let tagName;
@@ -52,15 +52,15 @@ export async function postQuestion(data: QuestionInterface) {
         console.log("seems tag has been found ");
         console.log(tagFound);
         tagArray.push(tagFound._id);
-        tagDocs.push(tagFound); 
+        tagDocs.push(tagFound);
         console.log("tag added to the array");
       } else {
         console.log("coudn't find the tag");
         console.log("creating new tag");
-    const newTag  = await Tag.create({
+        const newTag = await Tag.create({
           name: tagName,
         });
-        tagDocs.push(newTag); 
+        tagDocs.push(newTag);
         tagArray.push(await newTag._id);
         console.log("new tag created");
       }
@@ -73,13 +73,13 @@ export async function postQuestion(data: QuestionInterface) {
       author: data.userId,
     });
 
-    const {_id} = neww; 
+    const { _id } = neww;
 
-   for(let tagDoc of tagDocs){
-tagDoc.questions.push(_id); 
-await tagDoc.save(); 
-   }
-    
+    for (let tagDoc of tagDocs) {
+      tagDoc.questions.push(_id);
+      await tagDoc.save();
+    }
+
     // console.log(neww);
     revalidatePath("/");
     //  return users;
@@ -109,7 +109,9 @@ export const getUserByClerkId = async (id: string) => {
     connectToDB();
     const user = await User.findOne({ clerkId: id });
     if (!user) {
-      const user = await User.findOne({ clerkId: "user_2ef9jMdNJEPcQjbIky6MBXJc79L" });
+      const user = await User.findOne({
+        clerkId: "user_2ef9jMdNJEPcQjbIky6MBXJc79L",
+      });
       return user;
     }
     return user;
@@ -117,18 +119,37 @@ export const getUserByClerkId = async (id: string) => {
     console.log("error occured during fetching user by clerk id ");
   }
 };
-export const deleteUserByClerkId= async (id: string) => {
+export const getUserByClerkIdAndPopulate = async (id: string) => {
+  try {
+    connectToDB();
+    const user = await User.findOne({ clerkId: id });
+    const questions = await Question.find({ author: user._id }).populate(
+      "tags"
+    );
+    const answers = await Answer.find({ author: user._id }).populate({
+      path: "question",
+      model: Question,
+    });
+
+    return { user, questions, answers };
+  } catch (err) {
+    console.log(err);
+    console.log("error occured during fetching user by clerk id ");
+  }
+};
+
+export const deleteUserByClerkId = async (id: string) => {
   try {
     connectToDB();
     const user = await User.findOneAndDelete({ clerkId: id });
     if (!user) {
-    console.log('no user found to delete in db')
-    return 'no user found to delete in db' 
+      console.log("no user found to delete in db");
+      return "no user found to delete in db";
     }
     return user;
   } catch (err) {
     console.log("error occured during fetching user and deleting by id ");
-    console.log(err); 
+    console.log(err);
   }
 };
 
@@ -147,7 +168,7 @@ export async function getUserById(userId: mongoose.Schema.Types.ObjectId) {
 export async function getUserNameById(userId: mongoose.Schema.Types.ObjectId) {
   try {
     // console.log(userId)
-       await connectToDB();
+    await connectToDB();
     const user = await User.findById(userId);
     // console.log('the required user is ')
     //   console.log('user got')
@@ -170,7 +191,6 @@ export async function createUserByClerk(user: CreateUserClerkType) {
   try {
     await connectToDB();
 
-
     console.log(user);
 
     const mongoUser = await User.create(user);
@@ -178,46 +198,51 @@ export async function createUserByClerk(user: CreateUserClerkType) {
   } catch (err) {
     console.log("couldn't create user in the database with clerkId");
     console.log(err);
-  } 
+  }
 }
-export async function updateUserByClerk(id:string, toUpdate:   {
-  name: string; 
-  username: string; 
-  email: string; 
-  picture: string; 
-}  ) {
+export async function updateUserByClerk(
+  id: string,
+  toUpdate: {
+    name: string;
+    username: string;
+    email: string;
+    picture: string;
+  }
+) {
   try {
     await connectToDB();
 
-
-    const mongoUser = await User.findOneAndUpdate({clerkId: id}, toUpdate, {new: true});
+    const mongoUser = await User.findOneAndUpdate({ clerkId: id }, toUpdate, {
+      new: true,
+    });
     return mongoUser;
   } catch (err) {
     console.log("couldn't create user in the database with clerkId");
     console.log(err);
-  } 
+  }
 }
 export async function getAllTags() {
   try {
     await connectToDB();
-const tags = Tag.find().sort({createdOn:-1}); 
-if(!tags) return []; 
-return tags; 
- 
+    const tags = Tag.find().sort({ createdOn: -1 });
+    if (!tags) return [];
+    return tags;
   } catch (err) {
     console.log("couldn't tag all tags");
     console.log(err);
-  } 
+  }
 }
 
-
-
 export async function getQuestionById(qId: string) {
-  try {   await connectToDB();
+  try {
+    await connectToDB();
 
     // console.log(typeof qId)
-    const question = await Question.findById(qId).populate({path: "tags" , model: Tag, select: 'name _id'}).populate({path: 'author', model: User}).populate({path: 'answers', model: Answer});
-  // console.log(question); 
+    const question = await Question.findById(qId)
+      .populate({ path: "tags", model: Tag, select: "name _id" })
+      .populate({ path: "author", model: User })
+      .populate({ path: "answers", model: Answer });
+    // console.log(question);
 
     // console.log('the required user is ')
     //   console.log('user got')
@@ -228,256 +253,299 @@ export async function getQuestionById(qId: string) {
   }
 }
 
-
-export async function postAnswer(qId: string, userId: string,  answerr: string){
-
-  try {   await connectToDB();
-    const authorId = JSON.parse(userId); 
+export async function postAnswer(qId: string, userId: string, answerr: string) {
+  try {
+    await connectToDB();
+    const authorId = JSON.parse(userId);
     // console.log(userId)
     // console.log(authorId)
-const answer = await Answer.create({author: authorId, content: answerr, question: qId })
-    const question = await Question.findById(qId); 
-// console.log(question)
- question.answers.push(answer);
-//  console.log(question) 
-await question.save(); 
-  // revalidatePath(`/questions/${qId}`)
+    const answer = await Answer.create({
+      author: authorId,
+      content: answerr,
+      question: qId,
+    });
+    const question = await Question.findById(qId);
+    // console.log(question)
+    question.answers.push(answer);
+    //  console.log(question)
+    await question.save();
+    // revalidatePath(`/questions/${qId}`)
   } catch (err) {
     console.log(" couldn't post the answer to the db");
-    console.log(err)
+    console.log(err);
   }
-
-
 }
-
 
 //objectId -> stringify -> string-> parse -> string ; here userId
 
 interface VoteParam {
-
-    upvotes: number;
-    downvotes: number;
-    includesUpvotes: boolean; 
-    includesDownvotes: boolean; 
-    userId: string | null;
-    qId: string;
-    hasSaved?: boolean;
-answer? : boolean; 
-
+  upvotes: number;
+  downvotes: number;
+  includesUpvotes: boolean;
+  includesDownvotes: boolean;
+  userId: string | null;
+  qId: string;
+  hasSaved?: boolean;
+  answer?: boolean;
 }
 
-export async function handleVote(params: VoteParam  , type: string) {
+export async function handleVote(params: VoteParam, type: string) {
   try {
     await connectToDB();
-    const { userId, qId,  includesDownvotes ,includesUpvotes, answer=false} = params;
-    if(!answer){
-    
+    const {
+      userId,
+      qId,
+      includesDownvotes,
+      includesUpvotes,
+      answer = false,
+    } = params;
+    if (!answer) {
       //,{ $push: { upvotes: JSON.parse(userId)} }
       // const includesUpvote = question?.upvotes.includes(userId)
       // const includesDownvote = question?.downvotes.includes(userId)
-      
-      
-      
-      if(!includesUpvotes && !includesDownvotes && type== 'upvote') {
-        const question= await Question.findByIdAndUpdate(qId, { $push: { upvotes: JSON.parse(userId!) }}, {new: true});
-      // question?.upvotes.push(JSON.parse(userId!)); 
-      // question?.save(); 
-      // console.log(question)
-      }
-      else if(!includesUpvotes && !includesDownvotes && type== 'downvote') {
-      
-        const question= await Question.findByIdAndUpdate(qId, { $push: { downvotes: JSON.parse(userId!) }}, {new: true});
-        // console.log(question)
-      }
-      
-      
-      else if(includesUpvotes && !includesDownvotes && type== 'upvote') {
-        console.log('remove upvote')
-        const question= await Question.findByIdAndUpdate(qId, { $pull :{ upvotes: JSON.parse(userId!) }}, {new: true});
-      }
-      
-      else if(!includesUpvotes && includesDownvotes && type== 'upvote') {
-        console.log('remove upvote and add downvote')
-      
-      const question= await Question.findByIdAndUpdate(qId,{$push: { upvotes: JSON.parse(userId!) },$pull: { downvotes: JSON.parse(userId!) }}, {new: true});
-      // console.log(question)
-      }
-      
-      
-      
-      else if(includesUpvotes && !includesDownvotes && type== 'downvote') {
-        console.log('remove upvote')
-        const question= await Question.findByIdAndUpdate(qId,{$pull: { upvotes: JSON.parse(userId!) },$push: { downvotes: JSON.parse(userId!) }}, {new: true});
-      
-        // console.log(question)
-      }
-      
-      else if (!includesUpvotes && includesDownvotes && type== 'downvote') 
-      {
-        console.log('remove upvote and add downvote')
-        const question= await Question.findByIdAndUpdate(qId, { $pull :{ downvotes: JSON.parse(userId!) }}, {new: true});
-      
-        // console.log(question)
-      }
-      
 
+      if (!includesUpvotes && !includesDownvotes && type == "upvote") {
+        const question = await Question.findByIdAndUpdate(
+          qId,
+          { $push: { upvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+        // question?.upvotes.push(JSON.parse(userId!));
+        // question?.save();
+        // console.log(question)
+      } else if (!includesUpvotes && !includesDownvotes && type == "downvote") {
+        const question = await Question.findByIdAndUpdate(
+          qId,
+          { $push: { downvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+        // console.log(question)
+      } else if (includesUpvotes && !includesDownvotes && type == "upvote") {
+        console.log("remove upvote");
+        const question = await Question.findByIdAndUpdate(
+          qId,
+          { $pull: { upvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+      } else if (!includesUpvotes && includesDownvotes && type == "upvote") {
+        console.log("remove upvote and add downvote");
+
+        const question = await Question.findByIdAndUpdate(
+          qId,
+          {
+            $push: { upvotes: JSON.parse(userId!) },
+            $pull: { downvotes: JSON.parse(userId!) },
+          },
+          { new: true }
+        );
+        // console.log(question)
+      } else if (includesUpvotes && !includesDownvotes && type == "downvote") {
+        console.log("remove upvote");
+        const question = await Question.findByIdAndUpdate(
+          qId,
+          {
+            $pull: { upvotes: JSON.parse(userId!) },
+            $push: { downvotes: JSON.parse(userId!) },
+          },
+          { new: true }
+        );
+
+        // console.log(question)
+      } else if (!includesUpvotes && includesDownvotes && type == "downvote") {
+        console.log("remove upvote and add downvote");
+        const question = await Question.findByIdAndUpdate(
+          qId,
+          { $pull: { downvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+
+        // console.log(question)
+      }
+    } else {
+      //,{ $push: { upvotes: JSON.parse(userId)} }
+      // const includesUpvote = question?.upvotes.includes(userId)
+      // const includesDownvote = question?.downvotes.includes(userId)
+
+      if (!includesUpvotes && !includesDownvotes && type == "upvote") {
+        const answer = await Answer.findByIdAndUpdate(
+          JSON.parse(qId),
+          { $push: { upvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+        // question?.upvotes.push(JSON.parse(userId!));
+        // question?.save();
+        // console.log(question)
+      } else if (!includesUpvotes && !includesDownvotes && type == "downvote") {
+        const answer = await Answer.findByIdAndUpdate(
+          JSON.parse(qId),
+          { $push: { downvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+        // console.log(question)
+      } else if (includesUpvotes && !includesDownvotes && type == "upvote") {
+        console.log("remove upvote");
+        const answer = await Answer.findByIdAndUpdate(
+          JSON.parse(qId),
+          { $pull: { upvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+      } else if (!includesUpvotes && includesDownvotes && type == "upvote") {
+        console.log("remove upvote and add downvote");
+
+        const answer = await Answer.findByIdAndUpdate(
+          JSON.parse(qId),
+          {
+            $push: { upvotes: JSON.parse(userId!) },
+            $pull: { downvotes: JSON.parse(userId!) },
+          },
+          { new: true }
+        );
+        // console.log(question)
+      } else if (includesUpvotes && !includesDownvotes && type == "downvote") {
+        console.log("remove upvote");
+        const answer = await Answer.findByIdAndUpdate(
+          JSON.parse(qId),
+          {
+            $pull: { upvotes: JSON.parse(userId!) },
+            $push: { downvotes: JSON.parse(userId!) },
+          },
+          { new: true }
+        );
+
+        // console.log(question)
+      } else if (!includesUpvotes && includesDownvotes && type == "downvote") {
+        console.log("remove upvote and add downvote");
+        const answer = await Answer.findByIdAndUpdate(
+          JSON.parse(qId),
+          { $pull: { downvotes: JSON.parse(userId!) } },
+          { new: true }
+        );
+      }
     }
-    else{
 
+    // if(includes){
+    //   let  {upvotes}  = question;
+    //   upvotes  = upvotes.filter(el  => el!==userId )!;
+    //   console.log(upvotes)
+    // question.upvotes = upvotes;
+    // console.log(upvotes)
+    // question?.save();
 
-    
-//,{ $push: { upvotes: JSON.parse(userId)} }
-// const includesUpvote = question?.upvotes.includes(userId)
-// const includesDownvote = question?.downvotes.includes(userId)
+    // }
+    // else{
 
+    // }
 
-
-if(!includesUpvotes && !includesDownvotes && type== 'upvote') {
-  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $push: { upvotes: JSON.parse(userId!) }}, {new: true});
-// question?.upvotes.push(JSON.parse(userId!)); 
-// question?.save(); 
-// console.log(question)
-}
-else if(!includesUpvotes && !includesDownvotes && type== 'downvote') {
-
-  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $push: { downvotes: JSON.parse(userId!) }}, {new: true});
-  // console.log(question)
-}
-
-
-else if(includesUpvotes && !includesDownvotes && type== 'upvote') {
-  console.log('remove upvote')
-  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $pull :{ upvotes: JSON.parse(userId!) }}, {new: true});
-}
-
-else if(!includesUpvotes && includesDownvotes && type== 'upvote') {
-  console.log('remove upvote and add downvote')
-
-const answer= await Answer.findByIdAndUpdate(JSON.parse(qId),{$push: { upvotes: JSON.parse(userId!) },$pull: { downvotes: JSON.parse(userId!) }}, {new: true});
-// console.log(question)
-}
-
-
-
-else if(includesUpvotes && !includesDownvotes && type== 'downvote') {
-  console.log('remove upvote')
-  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId),{$pull: { upvotes: JSON.parse(userId!) },$push: { downvotes: JSON.parse(userId!) }}, {new: true});
-
-  // console.log(question)
-}
-
-else if (!includesUpvotes && includesDownvotes && type== 'downvote') 
-{
-  console.log('remove upvote and add downvote')
-  const answer= await Answer.findByIdAndUpdate(JSON.parse(qId), { $pull :{ downvotes: JSON.parse(userId!) }}, {new: true});
-
-  // console.log(question)
-}
-
-    }
-    
-
-// if(includes){
-//   let  {upvotes}  = question; 
-//   upvotes  = upvotes.filter(el  => el!==userId )!; 
-//   console.log(upvotes)
-// question.upvotes = upvotes; 
-// console.log(upvotes)
-// question?.save(); 
-
-// }
-// else{
-
-
-// }
-
-
-
-
-
-revalidatePath(`/questions/${qId}`)
-
+    revalidatePath(`/questions/${qId}`);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     console.log("couldn't alter the upvote array");
- 
   }
 }
-
-
 
 ///// suffered a lot due to this id prop drilling make sure to pass them in pure strong like in params.id or after passing the stringified object id do parse at the end
 
-
-
 export async function saveQuestion(qId: string, userId: string, type: string) {
-  try {   
+  try {
     await connectToDB();
-// console.log(qId)
+    // console.log(qId)
 
+    if (type == "save") {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $push: { saved: qId } },
+        { new: true }
+      );
+      console.log("saved");
+      // console.log(user)
+    } else {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { saved: qId } },
+        { new: true }
+      );
+      console.log("unsaved");
+      // console.log(user)
+    }
 
-if(type=='save'){
-  const user = await User.findByIdAndUpdate(userId,{ $push: {saved:qId } },{new: true})
-  console.log('saved')
-  // console.log(user)
-}
-else{
-  const user = await User.findByIdAndUpdate(userId,{ $pull: {saved:qId } },{new: true})
-  console.log('unsaved')
-  // console.log(user)
-}
-
-// const user = await User.findById(JSON.parse(userId))
-//  console.log(user)
-revalidatePath(`/questions/${qId}`)
-
+    // const user = await User.findById(JSON.parse(userId))
+    //  console.log(user)
+    revalidatePath(`/questions/${qId}`);
   } catch (err) {
- 
-    console.log(err)
+    console.log(err);
     console.log("couldn't save the question");
-  console.log(userId)
+    console.log(userId);
   }
 }
 
-
-export async function getSavedQuestions(userId: string){
-try{
-await connectToDB(); 
-const users = await User.findOne({clerkId: userId}).populate({path:'saved', model: Question, options: { sort: {createdAt: -1},}, populate: {path: 'tags', model: Tag, select: "_id name"}}); 
-// can also populate the author field
-return users.saved; 
+export async function getSavedQuestions(userId: string) {
+  try {
+    await connectToDB();
+    const users = await User.findOne({ clerkId: userId }).populate({
+      path: "saved",
+      model: Question,
+      options: { sort: { createdAt: -1 } },
+      populate: { path: "tags", model: Tag, select: "_id name" },
+    });
+    // can also populate the author field
+    return users.saved;
+  } catch (err) {
+    console.log(err);
+    console.log("couldn't get saved questions");
+  }
 }
-catch(err){
-  console.log(err)
-console.log("couldn't get saved questions")
+export async function increaseViewCount(
+  userId: string,
+  qId: string,
+  type: string
+) {
+  try {
+    await connectToDB();
+    const query = { user: JSON.parse(userId), question: qId, type };
+    await Question.findByIdAndUpdate(qId, { $inc: { views: 1 } });
+    const existingInteraction = await Interaction.findOne(query);
 
-}
-
-
-}
-export async function increaseViewCount(userId: string, qId: string,type: string){
-try{
-await connectToDB(); 
-const query = {user: JSON.parse(userId), question: qId, type, }; 
-await Question.findByIdAndUpdate(qId, { $inc: { views: 1} }); 
-const existingInteraction = await Interaction.findOne(query); 
-
-if(!existingInteraction) {
-  
-  const newInteraction = await Interaction.create(query); 
-
-
-}
-revalidatePath('/')
-revalidatePath(`/questions/${qId}`)
-}
-catch(err){
-  console.log(err)
-console.log("couldn't execute increaseViewCount")
-
-}
-
+    if (!existingInteraction) {
+      const newInteraction = await Interaction.create(query);
+    }
+    revalidatePath("/");
+    revalidatePath(`/questions/${qId}`);
+  } catch (err) {
+    console.log(err);
+    console.log("couldn't execute increaseViewCount");
+  }
 }
 
+export async function getTagById(tagId: string) {
+  try {
+    await connectToDB();
+    const tag = await Tag.findById(tagId).populate({
+      path: "questions",
+      populate: { path: "tags" },
+    });
 
+    return tag;
+  } catch (err) {
+    console.log("couldn't tag all tags");
+    console.log(err);
+  }
+}
 
+export async function deleteItem(id: string, type: string) {
+  try {
+    await connectToDB();
+    if (type == "question") {
+      await Question.findByIdAndDelete(JSON.parse(id));
+      await Answer.deleteMany({ question: JSON.parse(id) });
+      await Interaction.deleteMany({ question: JSON.parse(id) });
+      await Tag.updateMany(
+        { questions: { $in: JSON.parse(id) } },
+        { $pull: { questions: JSON.parse(id) } }
+      );
+      revalidatePath("/profile");
+    }
+  } catch (err) {
+    console.log(err);
+    console.log("couldn't execute the delete edit operations");
+  }
+}

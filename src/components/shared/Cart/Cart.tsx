@@ -5,8 +5,11 @@ import Tag from '../TagComponent/Tag'
 import Image from 'next/image'
 import { getTimeAgo,formatNumber } from '@/lib/utils'
 import { IQuestion, ITag } from '@/database/model.db'
-import { getUserById } from '@/database/actions.db'
+import { deleteItem, getUserById } from '@/database/actions.db'
 import mongoose from 'mongoose'
+import Link from 'next/link'
+import { SignIn, SignedIn, auth } from '@clerk/nextjs'
+import EditQuestionAnswer from '@/components/EditQuestionAnswer'
 
 
 type QuestionType = {
@@ -22,10 +25,18 @@ type QuestionType = {
   createdAt: Date;
 };
 
+interface Prop {
+question : QuestionType; 
+edit?: boolean; 
 
-const Cart = async ({ question }: { question: QuestionType }) => {
+}
+
+const Cart = async ({ question,edit=false }: Prop) => {
+const {userId} = auth(); 
   const author: any = await getUserById(question.author!);
   const authName: string = author?.name || "aakash";
+
+const editCondition = edit && userId == author.clerkId; 
 
 
   return (
@@ -38,10 +49,27 @@ const Cart = async ({ question }: { question: QuestionType }) => {
             <span>{authName}<span className=""> - asked {getTimeAgo(question.createdAt)}</span> </span>
   
             </div>
-          <h2 className="text-lg tracking-tighter max-sm:text-[18x] line-clamp-1 h3-semi-bold"> {question.title} </h2>
+         
+         <div className='flex justify-between'>
+         <h2 className="text-lg tracking-tighter max-sm:text-[18x] line-clamp-1 h3-semi-bold">    <Link className='hover:text-primary-500' href={`/questions/${question._id}`}> {question.title} </Link>  </h2>
+         <SignedIn>
+{
+editCondition && <EditQuestionAnswer id={JSON.stringify(question._id)}></EditQuestionAnswer>
+
+}
+
+
+</SignedIn>
+
+
+         </div>
+        
+     
+
+
           <div className="tags flex gap-3 max-sm:mr-4">
 {
-question.tags.map(tag =>   <Tag key={tag.name} item={tag.name} rounded="sm" otherStyle="max-sm:px-[10px]   min-w-[4rem] px-1 py-[.05rem] max-sm:text-[10px]"/>  )
+question.tags.map(tag =>   <Tag key={tag.name} item={tag} rounded="sm" otherStyle="max-sm:px-[10px]   min-w-[4rem] px-1 py-[.05rem] max-sm:text-[10px]"/>  )
 
 }
 
