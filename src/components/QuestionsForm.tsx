@@ -20,24 +20,44 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Tag from "./shared/TagComponent/Tag";
-import { postQuestion } from "@/database/actions.db";
+import { editQuestions, postQuestion } from "@/database/actions.db";
 import { useRouter } from "next/navigation";
 import useTheme from "@/context/context";
+import { Content } from "next/font/google";
 
-const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
+
+interface Props {
+  dbUserId: string | null;
+  type: string;
+  questionDetails?: string | any;
+
+}
+
+const QuestionsForm = ({
+  dbUserId,
+  type,
+  questionDetails,
+
+}: Props) => {
   const { mode } = useTheme();
 
   const router = useRouter();
-  let type = "submit";
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  if (questionDetails) questionDetails = JSON.parse(questionDetails);
+  const {tags}= questionDetails; 
+//@ts-ignore
+  const newTags : string[] =  tags.map(el => {
+   return el.name; 
+  })
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof QuestionSchema>>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      tags: [],
+      title: questionDetails?.title || "",
+      content: '',
+      tags: newTags || [],
     },
   });
 
@@ -45,20 +65,22 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
   async function onSubmit(values: z.infer<typeof QuestionSchema>) {
     if (dbUserId == null) router.push("/sign-up");
     else {
+
+
+      
       setIsSubmitting(true);
       try {
         const userId = JSON.parse(dbUserId);
         const data = { ...values, userId };
-        // console.log(data);
+if(type=="submit")
         await postQuestion(data);
-        // console.log(userId)
+      else await editQuestions(JSON.stringify(questionDetails._id), {title: values.title , content: values.content}); 
       } catch (err) {
         console.log("error occured during submiting the question form");
       } finally {
-        router.push("/");
+       type=='submit'? router.push("/") : router.push(`/questions/${questionDetails._id}`); 
         setIsSubmitting(false);
       }
-      //  console.log(data)
     }
   }
 
@@ -157,7 +179,7 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
                       //@ts-ignore
                       editorRef.current = editor;
                     }}
-                    initialValue=""
+                    initialValue={questionDetails?.content || ""}
                     init={{
                       height: 400,
                       menubar: false,
@@ -211,6 +233,7 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
                 <>
                   <Input
                     className="no-focus dark:text-white dark:border-black  dark:bg-dark-400"
+                    disabled={type=="edit"}
                     onKeyDown={(e) => {
                       handleTagKeyDown(e, field);
                     }}
@@ -226,13 +249,16 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
                           {" "}
                           {tag}
                         </span>
-                        <Image
+                        {
+                          type=='submit' &&    <Image
                           className="dark:invert"
                           src="/assets/icons/close.svg"
                           width={12}
                           height={12}
                           alt="remove"
-                        />{" "}
+                        />
+                        }
+                     
                       </div>
                     ))}
                   </div>
@@ -251,7 +277,7 @@ const QuestionsForm = ({ dbUserId }: { dbUserId: string | null }) => {
           className="primary-gradient py-1 text-white px-6 mt-10"
           disabled={isSubmitting}
         >
-          Submit the Question
+          {type == "submit" ? "Submit the Question" : "Edit the Question"}
         </Button>
 
         {isSubmitting ? (

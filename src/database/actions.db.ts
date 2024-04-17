@@ -4,7 +4,7 @@ import { Answer, Interaction, Question, Tag, User } from "./model.db";
 import { connectToDB } from "./connect.db";
 import { IQuestion, ITag } from "./model.db";
 import { QuestionInterface } from "@/lib/formSchema";
-import mongoose, { mongo } from "mongoose";
+import mongoose, { connection, mongo } from "mongoose";
 import { connect } from "http2";
 import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
@@ -32,6 +32,22 @@ export async function getAllUsers() {
     console.log("eror occured during fetching all users from db");
     console.log(err);
   }
+}
+
+export async function editQuestions(id: string, data: {title: string, content: string}){
+try{
+await connectToDB(); 
+const qId = JSON.parse(id); 
+const question  = await Question.findById(qId)
+question.title = data.title; 
+question.content = data.content; 
+await question.save(); 
+revalidatePath(`/questions/${qId}`); 
+}
+catch (err) {
+  console.log("coudn't create the question");
+  console.log(err);
+}
 }
 
 export async function postQuestion(data: QuestionInterface) {
@@ -233,20 +249,25 @@ export async function getAllTags() {
   }
 }
 
-export async function getQuestionById(qId: string) {
+export async function getQuestionById(qId: string, tagId: boolean=true) {
   try {
     await connectToDB();
 
-    // console.log(typeof qId)
-    const question = await Question.findById(qId)
-      .populate({ path: "tags", model: Tag, select: "name _id" })
-      .populate({ path: "author", model: User })
-      .populate({ path: "answers", model: Answer });
-    // console.log(question);
-
-    // console.log('the required user is ')
-    //   console.log('user got')
-    // console.log(user)
+let question;
+if(tagId){
+ question = await Question.findById(qId)
+  .populate({ path: "tags", model: Tag, select: "name _id" })
+  .populate({ path: "author", model: User })
+  .populate({ path: "answers", model: Answer });
+}
+else{
+  question = await Question.findById(qId)
+  .populate({ path: "tags", model: Tag, select: "name" })
+  .populate({ path: "author", model: User })
+  .populate({ path: "answers", model: Answer });
+}
+   
+  
     return question;
   } catch (err) {
     console.log("not find question with the given id ");
@@ -542,8 +563,15 @@ export async function deleteItem(id: string, type: string) {
         { questions: { $in: JSON.parse(id) } },
         { $pull: { questions: JSON.parse(id) } }
       );
-      revalidatePath("/profile");
     }
+    else{
+
+      await Answer.findByIdAndDelete(JSON.parse(id));
+      await Question.updateMany({ $pull: {answers : JSON.parse(id)} });
+      await Interaction.deleteMany({ answer: JSON.parse(id)});
+
+    }
+    revalidatePath("/profile");
   } catch (err) {
     console.log(err);
     console.log("couldn't execute the delete edit operations");

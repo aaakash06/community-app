@@ -135,7 +135,7 @@ else{
           className="primary-gradient  py-1 text-white px-6 mt-10"
           disabled={isSubmitting}
         >
-          Submit the Question
+          Submit the Answer
         </Button>
 
         {isSubmitting ? (

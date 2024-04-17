@@ -59,8 +59,8 @@ const Profile = async () => {
       </div>
       <h4 className="font-bold text-xl mt-10 mb-3 dark:text-white">Stats</h4>
 
-      <div className="Stats  grid grid-cols-4 gap-3 max-md:grid-cols-2">
-        <div className="flex flex-col gap-5  shadow-sm items-center justify-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row max-md:gap-7  ">
+      <div className="Stats  grid grid-cols-4 gap-3 max-md:grid-cols-2 ">
+        <div className="flex flex-col gap-5  shadow-sm items-center justify-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row  max-sm:gap-4  max-md:gap-7  ">
           <div className="flex flex-col  ">
             {" "}
             <span className="text-center">{questions.length}</span>
@@ -72,7 +72,7 @@ const Profile = async () => {
             <span className="text-center">Answers</span>{" "}
           </div>
         </div>
-        <div className="flex flex-col gap-2  shadow-sm items-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row max-md:gap-7 px-5 ">
+        <div className="flex flex-col gap-2  shadow-sm items-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row  max-sm:gap-4  max-md:gap-7 px-5 ">
           <Image
             src="/assets/icons/gold-medal.svg"
             width={50}
@@ -82,7 +82,7 @@ const Profile = async () => {
           <span>0</span>
           <span>Gold Badge</span>{" "}
         </div>
-        <div className="flex flex-col gap-2  shadow-sm items-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row max-md:gap-7 px-5 ">
+        <div className="flex flex-col gap-2  shadow-sm items-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row  max-sm:gap-4  max-md:gap-7 px-5 ">
           <Image
             src="/assets/icons/silver-medal.svg"
             width={50}
@@ -92,7 +92,7 @@ const Profile = async () => {
           <span>0</span>
           <span>Silver Badge</span>{" "}
         </div>
-        <div className="flex flex-col gap-2  shadow-sm items-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row max-md:gap-7 px-5 ">
+        <div className="flex flex-col gap-2  shadow-sm items-center bg-light-900 py-3 max-w-[12rem] dark:bg-dark-300 dark:text-white rounded-md text-sm max-md:flex-row  max-sm:gap-4  max-md:gap-7 px-5 ">
           <Image
             src="/assets/icons/bronze-medal.svg"
             width={50}

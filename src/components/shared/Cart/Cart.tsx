@@ -34,7 +34,7 @@ edit?: boolean;
 const Cart = async ({ question,edit=false }: Prop) => {
 const {userId} = auth(); 
   const author: any = await getUserById(question.author!);
-  const authName: string = author?.name || "aakash";
+  const authName: string = author?.name ;
 
 const editCondition = edit && userId == author.clerkId; 
 
@@ -54,7 +54,7 @@ const editCondition = edit && userId == author.clerkId;
          <h2 className="text-lg tracking-tighter max-sm:text-[18x] line-clamp-1 h3-semi-bold">    <Link className='hover:text-primary-500' href={`/questions/${question._id}`}> {question.title} </Link>  </h2>
          <SignedIn>
 {
-editCondition && <EditQuestionAnswer id={JSON.stringify(question._id)}></EditQuestionAnswer>
+editCondition && <EditQuestionAnswer id={JSON.stringify(question._id)} type='question'></EditQuestionAnswer>
 
 }
 
