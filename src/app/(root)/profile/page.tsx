@@ -54,7 +54,8 @@ const Profile = async () => {
 
         <Button className="bg-light-700 dark:bg-dark-400 px-5 dark:text-white">
           {" "}
-          Edit Profile
+          <Link href="/profile/edit">Edit Profile</Link>
+          
         </Button>
       </div>
       <h4 className="font-bold text-xl mt-10 mb-3 dark:text-white">Stats</h4>

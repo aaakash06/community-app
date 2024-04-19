@@ -267,7 +267,7 @@ else{
   .populate({ path: "answers", model: Answer });
 }
    
-  
+
     return question;
   } catch (err) {
     console.log("not find question with the given id ");
@@ -577,3 +577,48 @@ export async function deleteItem(id: string, type: string) {
     console.log("couldn't execute the delete edit operations");
   }
 }
+
+export async function editProfile(id: string, data: {name: string; username: string; portfolioWebsite?: string; location?: string; bio?:string}){
+  try{
+
+  await connectToDB(); 
+
+  const user  = await User.findOneAndUpdate({clerkId: id},{data},{new:true}); 
+  console.log(user); 
+  revalidatePath(`/profile`); 
+  }
+  catch (err) {
+    console.log("coudn't edit the profile");
+    console.log(err);
+  }
+  }
+export async function getHotQuestions(){
+  try{
+
+  await connectToDB(); 
+
+  const questions  = await Question.find({}).sort({views: -1, upvotes: -1}).limit(5); 
+return questions; 
+
+  }
+  catch (err) {
+    console.log("coudn't get hot questions");
+    console.log(err);
+  }
+  }
+export async function getPopularTags(){
+  try{
+
+  await connectToDB(); 
+
+  const tags  = await Tag.aggregate([{$project: { name:1, questions:1, noOfQuestions: {$size: "$questions"} }},  {$sort: { noOfQuestions: -1 } },  {$limit: 8},])
+return tags; 
+
+  }
+  catch (err) {
+    console.log("coudn't get hot questions");
+    console.log(err);
+  }
+  }
+
+

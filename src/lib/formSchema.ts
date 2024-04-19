@@ -8,6 +8,13 @@ export const QuestionSchema = z.object({
     .array(z.string().min(1).max(15))
     .max(3, { message: "Can not add more tags than 3" }),
 });
+export const UserSchema = z.object({
+ name: z.string().min(1).max(50),
+ username: z.string().min(1).max(50),
+ portfolioWebsite: z.string(),
+ location: z.string(),
+ bio: z.string(),
+});
 export const AnswerSchema = z.object({
   content: z.string().min(1).max(1000),
 });

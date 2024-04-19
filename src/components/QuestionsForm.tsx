@@ -43,13 +43,20 @@ const QuestionsForm = ({
 
   const router = useRouter();
 
+let newTags : string[] =[]; 
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  if (questionDetails) questionDetails = JSON.parse(questionDetails);
-  const {tags}= questionDetails; 
-//@ts-ignore
-  const newTags : string[] =  tags.map(el => {
-   return el.name; 
-  })
+  if (questionDetails){
+
+    questionDetails = JSON.parse(questionDetails);
+    const {tags}= questionDetails; 
+  //@ts-ignore
+    const newTagss : string[] =  tags.map(el => {
+     return el.name; 
+    })
+
+newTags = newTagss; 
+  } 
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof QuestionSchema>>({
@@ -93,7 +100,6 @@ if(type=="submit")
 
       const tagInput = e.target as HTMLInputElement;
       const tagValue = tagInput.value.trim();
-      console.log(tagValue);
       if (tagValue !== "") {
         if (tagValue.length > 15) {
           return form.setError("tags", {
@@ -132,7 +138,6 @@ if(type=="submit")
     >,
     name: string
   ) {
-    // console.log('remove was called')
     const newFieldValue = field.value.filter((tag) => tag !== name);
     form.setValue("tags", newFieldValue);
   }
@@ -243,7 +248,9 @@ if(type=="submit")
                       <div
                         className="flex bg-light-800 gap-1 dark:bg-slate-800 px-2 rounded-sm"
                         key={tag}
-                        onClick={() => handleTagRemove(field, tag)}
+                        onClick={() => 
+                          
+                          type=="submit" && handleTagRemove(field, tag)}
                       >
                         <span className="shadow-sm  dark:bg-dark-400  dark:border-none p-1 px-1 bg-light-800 text-[11px] text-zinc-500  dark:text-sky-300 text-center">
                           {" "}
