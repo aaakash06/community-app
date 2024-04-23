@@ -33,7 +33,7 @@ const Collections = async ({searchParams}: {searchParams: {q: string}}) => {
       </div>
 
       <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">
-        <SearchBar route="/collection" />
+        <SearchBar route={`/collection`} />
         <FilterDropDown items={HomeFilter}></FilterDropDown>
       </div>
       {questions.length == 0 ? (

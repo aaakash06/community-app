@@ -29,7 +29,7 @@ const Community
 
       <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">
 
-<SearchBar/>
+
 <FilterDropDown items={filter} tags={false}></FilterDropDown>
 
 </div>
