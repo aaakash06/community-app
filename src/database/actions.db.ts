@@ -4,11 +4,12 @@ import { Answer, Interaction, Question, Tag, User } from "./model.db";
 import { connectToDB } from "./connect.db";
 import { IQuestion, ITag } from "./model.db";
 import { QuestionInterface } from "@/lib/formSchema";
-import mongoose, { connection, mongo } from "mongoose";
+import mongoose, { FilterQuery, connection, mongo } from "mongoose";
 import { connect } from "http2";
 import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { Select } from "@radix-ui/react-select";
+
 
 type QuestionType = {
   title: string;
@@ -106,10 +107,19 @@ export async function postQuestion(data: QuestionInterface) {
   // console.log('hello')
 }
 
-export const getAllQuestions = async () => {
+export const getAllQuestions = async (searchParams?: string) => {
   try {
+
+const query: FilterQuery<typeof Question> = {}; 
+
+if(searchParams){
+query.$or = [{ title: { $regex : new RegExp(searchParams, 'i')}},
+{ content: { $regex : new RegExp(searchParams, 'i')}}
+]; 
+}
+
     await connectToDB();
-    let allQuestions = await Question.find()
+    let allQuestions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
       .sort({ createdAt: -1 });
     // console.log(allQuestions)
@@ -237,10 +247,18 @@ export async function updateUserByClerk(
     console.log(err);
   }
 }
-export async function getAllTags() {
+export async function getAllTags(searchParams: string) {
   try {
+    console.log(searchParams)
     await connectToDB();
-    const tags = Tag.find().sort({ createdOn: -1 });
+    let query: FilterQuery<typeof Tag> = {}; 
+
+    if(searchParams){
+      query = {name: { $regex: new RegExp(searchParams, 'i')}}; 
+    } 
+
+    const tags = Tag.find(query).sort({ createdOn: -1 });
+   
     if (!tags) return [];
     return tags;
   } catch (err) {
@@ -469,8 +487,6 @@ export async function handleVote(params: VoteParam, type: string) {
 export async function saveQuestion(qId: string, userId: string, type: string) {
   try {
     await connectToDB();
-    // console.log(qId)
-
     if (type == "save") {
       const user = await User.findByIdAndUpdate(
         userId,
@@ -478,7 +494,6 @@ export async function saveQuestion(qId: string, userId: string, type: string) {
         { new: true }
       );
       console.log("saved");
-      // console.log(user)
     } else {
       const user = await User.findByIdAndUpdate(
         userId,
@@ -486,11 +501,7 @@ export async function saveQuestion(qId: string, userId: string, type: string) {
         { new: true }
       );
       console.log("unsaved");
-      // console.log(user)
     }
-
-    // const user = await User.findById(JSON.parse(userId))
-    //  console.log(user)
     revalidatePath(`/questions/${qId}`);
   } catch (err) {
     console.log(err);
@@ -499,16 +510,21 @@ export async function saveQuestion(qId: string, userId: string, type: string) {
   }
 }
 
-export async function getSavedQuestions(userId: string) {
+export async function getSavedQuestions(userId: string, searchParams: string) {
   try {
     await connectToDB();
+ let query: FilterQuery<typeof Question> ={};
+    if(searchParams){
+
+      query = {title: { $regex: new RegExp(searchParams, 'i')}}; 
+    } 
     const users = await User.findOne({ clerkId: userId }).populate({
       path: "saved",
       model: Question,
+      match: query,
       options: { sort: { createdAt: -1 } },
       populate: { path: "tags", model: Tag, select: "_id name" },
     });
-    // can also populate the author field
     return users.saved;
   } catch (err) {
     console.log(err);
@@ -620,5 +636,6 @@ return tags;
     console.log(err);
   }
   }
+
 
 

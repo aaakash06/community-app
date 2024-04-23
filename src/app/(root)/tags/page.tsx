@@ -8,8 +8,8 @@ import Link from "next/link";
 
 const filter = ["New Users", " Old Users", "Top Contributors"];
 
-const Tags = async () => {
-  const allTags = await getAllTags();
+const Tags = async ({ searchParams }: {searchParams: {q:string}}) => {
+  const allTags = await getAllTags(searchParams.q);
 
   return (
     <div>
@@ -18,7 +18,7 @@ const Tags = async () => {
       </div>
 
       <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">
-        <SearchBar />
+        <SearchBar route='/tags'/>
         <FilterDropDown items={filter} tags={false}></FilterDropDown>
       </div>
 

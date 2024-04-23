@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import queryString from 'query-string';
 // checking sync with git
 
 export function cn(...inputs: ClassValue[]) {
@@ -40,3 +41,22 @@ export function formatNumber(num: number): string {
     return num.toString();
   }
 }
+
+export function changeQuery(searchParams: string,key:string,value: string){
+
+const newQuery = queryString.parse(searchParams); 
+newQuery[key] = value; 
+const newUrl = queryString.stringifyUrl({url: window.location.pathname, query: newQuery },{skipNull: true})
+return newUrl;
+
+  }
+export function removeQuery(searchParams: string, keys: string[]){
+
+const currQuery = queryString.parse(searchParams); 
+keys.forEach(key => {
+  delete currQuery[key]; 
+})
+const newUrl = queryString.stringifyUrl({url: window.location.pathname, query: currQuery },{skipNull: true})
+return newUrl;
+
+  }

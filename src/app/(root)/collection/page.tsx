@@ -12,10 +12,10 @@ import { IQuestion } from "@/database/model.db";
 import Image from "next/image";
 import ImageComponent from "@/components/ImageComponent";
 
-const Collections = async () => {
+const Collections = async ({searchParams}: {searchParams: {q: string}}) => {
   const { userId } = auth();
 
-  const questions: IQuestion[] = (await getSavedQuestions(userId!)) || [];
+  const questions: IQuestion[] = (await getSavedQuestions(userId!,searchParams.q)) || [];
 
   return (
     <>
@@ -33,7 +33,7 @@ const Collections = async () => {
       </div>
 
       <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">
-        <SearchBar />
+        <SearchBar route="/collection" />
         <FilterDropDown items={HomeFilter}></FilterDropDown>
       </div>
       {questions.length == 0 ? (

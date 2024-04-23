@@ -10,7 +10,7 @@ export async function connectToDB() {
   try {
   
     if (mongoose.connection.readyState === 1) {
-      console.log("already connected to db");
+      // console.log("already connected to db");
     
     } else {
   
