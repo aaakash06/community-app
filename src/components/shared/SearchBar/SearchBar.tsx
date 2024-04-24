@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { changeQuery, removeQuery } from "@/lib/utils";
-const SearchBar = ({ route }: { route: string }) => {
+const SearchBar = ({ route }: { route?: string }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -17,7 +17,7 @@ const SearchBar = ({ route }: { route: string }) => {
         const newUrl = changeQuery(searchParams.toString(), "q", search);
         router.push(newUrl, { scroll: false });
       } else {
-        router.push(route, { scroll: false });
+        router.push(route!, { scroll: false });
       }
     }, 500);
 

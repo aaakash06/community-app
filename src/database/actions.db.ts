@@ -10,7 +10,6 @@ import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { Select } from "@radix-ui/react-select";
 
-
 type QuestionType = {
   title: string;
   content: string;
@@ -23,10 +22,28 @@ type QuestionType = {
   createdAt: Date;
 };
 
-export async function getAllUsers() {
+export async function getAllUsers(filter: string) {
   try {
     await connectToDB();
-    const users = await User.find().sort({ joinAt: -1 });
+    let sortQuery = {};
+    sortQuery = { joinAt: -1 };
+
+    switch (filter) {
+      case "new users":
+        sortQuery = { joinAt: -1 };
+        break;
+      case "old users":
+        sortQuery = { joinAt: 1 };
+        break;
+
+      case "top contributors":
+        sortQuery = { reputations: 1 };
+        break;
+
+      default:
+        break;
+    }
+    const users = await User.find().sort(sortQuery);
 
     return users;
   } catch (err) {
@@ -35,20 +52,22 @@ export async function getAllUsers() {
   }
 }
 
-export async function editQuestions(id: string, data: {title: string, content: string}){
-try{
-await connectToDB(); 
-const qId = JSON.parse(id); 
-const question  = await Question.findById(qId)
-question.title = data.title; 
-question.content = data.content; 
-await question.save(); 
-revalidatePath(`/questions/${qId}`); 
-}
-catch (err) {
-  console.log("coudn't create the question");
-  console.log(err);
-}
+export async function editQuestions(
+  id: string,
+  data: { title: string; content: string }
+) {
+  try {
+    await connectToDB();
+    const qId = JSON.parse(id);
+    const question = await Question.findById(qId);
+    question.title = data.title;
+    question.content = data.content;
+    await question.save();
+    revalidatePath(`/questions/${qId}`);
+  } catch (err) {
+    console.log("coudn't create the question");
+    console.log(err);
+  }
 }
 
 export async function postQuestion(data: QuestionInterface) {
@@ -107,21 +126,43 @@ export async function postQuestion(data: QuestionInterface) {
   // console.log('hello')
 }
 
-export const getAllQuestions = async (searchParams?: string) => {
+export const getAllQuestions = async (
+  searchParams?: string,
+  filter?: string
+) => {
   try {
+    const query: FilterQuery<typeof Question> = {};
 
-const query: FilterQuery<typeof Question> = {}; 
-
-if(searchParams){
-query.$or = [{ title: { $regex : new RegExp(searchParams, 'i')}},
-{ content: { $regex : new RegExp(searchParams, 'i')}}
-]; 
-}
-
+    if (searchParams) {
+      query.$or = [
+        { title: { $regex: new RegExp(searchParams, "i") } },
+        { content: { $regex: new RegExp(searchParams, "i") } },
+      ];
+    }
+    let sortQuery = {};
+    sortQuery = { createdAt: -1 };
+    // newest recommended frequent unanswered
     await connectToDB();
+    switch (filter) {
+      case "newest":
+        sortQuery = { createdAt: -1 };
+        break;
+      case "frequent":
+        sortQuery = { views: -1 };
+        break;
+
+      case "unanswered":
+        query.answers = { $size: 0 };
+        break;
+
+      default:
+        sortQuery = { createdAt: -1 };
+        break;
+    }
+
     let allQuestions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
-      .sort({ createdAt: -1 });
+      .sort(sortQuery);
     // console.log(allQuestions)
     return allQuestions;
   } catch (err) {
@@ -247,18 +288,29 @@ export async function updateUserByClerk(
     console.log(err);
   }
 }
-export async function getAllTags(searchParams: string) {
+export async function getAllTags(searchParams: string, filter: string) {
   try {
-    console.log(searchParams)
+    let sortQuery = {};
     await connectToDB();
-    let query: FilterQuery<typeof Tag> = {}; 
+    let query: FilterQuery<typeof Tag> = {};
+    if (searchParams) {
+      query = { name: { $regex: new RegExp(searchParams, "i") } };
+    }
+    sortQuery = { createdOn: -1 };
+    switch (filter) {
+      case "new tag":
+        sortQuery = { createdOn: -1 };
+        break;
+      case " old tag":
+        sortQuery = { createdOn: 1 };
+        break;
 
-    if(searchParams){
-      query = {name: { $regex: new RegExp(searchParams, 'i')}}; 
-    } 
+      default:
+        break;
+    }
 
-    const tags = Tag.find(query).sort({ createdOn: -1 });
-   
+    const tags = Tag.find(query).sort(sortQuery);
+
     if (!tags) return [];
     return tags;
   } catch (err) {
@@ -267,24 +319,22 @@ export async function getAllTags(searchParams: string) {
   }
 }
 
-export async function getQuestionById(qId: string, tagId: boolean=true) {
+export async function getQuestionById(qId: string, tagId: boolean = true) {
   try {
     await connectToDB();
 
-let question;
-if(tagId){
- question = await Question.findById(qId)
-  .populate({ path: "tags", model: Tag, select: "name _id" })
-  .populate({ path: "author", model: User })
-  .populate({ path: "answers", model: Answer });
-}
-else{
-  question = await Question.findById(qId)
-  .populate({ path: "tags", model: Tag, select: "name" })
-  .populate({ path: "author", model: User })
-  .populate({ path: "answers", model: Answer });
-}
-   
+    let question;
+    if (tagId) {
+      question = await Question.findById(qId)
+        .populate({ path: "tags", model: Tag, select: "name _id" })
+        .populate({ path: "author", model: User })
+        .populate({ path: "answers", model: Answer });
+    } else {
+      question = await Question.findById(qId)
+        .populate({ path: "tags", model: Tag, select: "name" })
+        .populate({ path: "author", model: User })
+        .populate({ path: "answers", model: Answer });
+    }
 
     return question;
   } catch (err) {
@@ -513,11 +563,10 @@ export async function saveQuestion(qId: string, userId: string, type: string) {
 export async function getSavedQuestions(userId: string, searchParams: string) {
   try {
     await connectToDB();
- let query: FilterQuery<typeof Question> ={};
-    if(searchParams){
-
-      query = {title: { $regex: new RegExp(searchParams, 'i')}}; 
-    } 
+    let query: FilterQuery<typeof Question> = {};
+    if (searchParams) {
+      query = { title: { $regex: new RegExp(searchParams, "i") } };
+    }
     const users = await User.findOne({ clerkId: userId }).populate({
       path: "saved",
       model: Question,
@@ -553,11 +602,43 @@ export async function increaseViewCount(
   }
 }
 
-export async function getTagById(tagId: string) {
+export async function getTagById(
+  tagId: string,
+  searchParams: string,
+  filter: string
+) {
   try {
     await connectToDB();
+
+    let query: FilterQuery<typeof Tag> = {};
+    let sortQuery = {};
+    if (searchParams) {
+      query.$or = [
+        { title: { $regex: new RegExp(searchParams, "i") } },
+        { content: { $regex: new RegExp(searchParams, "i") } },
+      ];
+    }
+    switch (filter) {
+      case "newest":
+        sortQuery = { createdAt: -1 };
+        break;
+      case "frequent":
+        sortQuery = { views: -1 };
+        break;
+
+      case "unanswered":
+        query.answers = { $size: 0 };
+        break;
+
+      default:
+        sortQuery = { createdAt: -1 };
+        break;
+    }
+
     const tag = await Tag.findById(tagId).populate({
       path: "questions",
+      match: query,
+      options: { sort: sortQuery },
       populate: { path: "tags" },
     });
 
@@ -579,13 +660,10 @@ export async function deleteItem(id: string, type: string) {
         { questions: { $in: JSON.parse(id) } },
         { $pull: { questions: JSON.parse(id) } }
       );
-    }
-    else{
-
+    } else {
       await Answer.findByIdAndDelete(JSON.parse(id));
-      await Question.updateMany({ $pull: {answers : JSON.parse(id)} });
-      await Interaction.deleteMany({ answer: JSON.parse(id)});
-
+      await Question.updateMany({ $pull: { answers: JSON.parse(id) } });
+      await Interaction.deleteMany({ answer: JSON.parse(id) });
     }
     revalidatePath("/profile");
   } catch (err) {
@@ -594,48 +672,62 @@ export async function deleteItem(id: string, type: string) {
   }
 }
 
-export async function editProfile(id: string, data: {name: string; username: string; portfolioWebsite?: string; location?: string; bio?:string}){
-  try{
-
-  await connectToDB(); 
-
-  const user  = await User.findOneAndUpdate({clerkId: id},{data},{new:true}); 
-  console.log(user); 
-  revalidatePath(`/profile`); 
+export async function editProfile(
+  id: string,
+  data: {
+    name: string;
+    username: string;
+    portfolioWebsite?: string;
+    location?: string;
+    bio?: string;
   }
-  catch (err) {
+) {
+  try {
+    await connectToDB();
+
+    const user = await User.findOneAndUpdate(
+      { clerkId: id },
+      { data },
+      { new: true }
+    );
+    console.log(user);
+    revalidatePath(`/profile`);
+  } catch (err) {
     console.log("coudn't edit the profile");
     console.log(err);
   }
-  }
-export async function getHotQuestions(){
-  try{
+}
+export async function getHotQuestions() {
+  try {
+    await connectToDB();
 
-  await connectToDB(); 
-
-  const questions  = await Question.find({}).sort({views: -1, upvotes: -1}).limit(5); 
-return questions; 
-
-  }
-  catch (err) {
+    const questions = await Question.find({})
+      .sort({ views: -1, upvotes: -1 })
+      .limit(5);
+    return questions;
+  } catch (err) {
     console.log("coudn't get hot questions");
     console.log(err);
   }
-  }
-export async function getPopularTags(){
-  try{
+}
+export async function getPopularTags() {
+  try {
+    await connectToDB();
 
-  await connectToDB(); 
-
-  const tags  = await Tag.aggregate([{$project: { name:1, questions:1, noOfQuestions: {$size: "$questions"} }},  {$sort: { noOfQuestions: -1 } },  {$limit: 8},])
-return tags; 
-
-  }
-  catch (err) {
+    const tags = await Tag.aggregate([
+      {
+        $project: {
+          name: 1,
+          questions: 1,
+          noOfQuestions: { $size: "$questions" },
+        },
+      },
+      { $sort: { noOfQuestions: -1 } },
+      { $limit: 8 },
+    ]);
+    return tags;
+  } catch (err) {
     console.log("coudn't get hot questions");
     console.log(err);
   }
-  }
-
-
-
+}

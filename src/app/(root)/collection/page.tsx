@@ -12,7 +12,7 @@ import { IQuestion } from "@/database/model.db";
 import Image from "next/image";
 import ImageComponent from "@/components/ImageComponent";
 
-const Collections = async ({searchParams}: {searchParams: {q: string}}) => {
+const Collections = async ({searchParams}: {searchParams: {q: string, filter: string}}) => {
   const { userId } = auth();
 
   const questions: IQuestion[] = (await getSavedQuestions(userId!,searchParams.q)) || [];

@@ -6,10 +6,10 @@ import React from "react";
 import { ITag } from "@/database/model.db";
 import Link from "next/link";
 
-const filter = ["New Users", " Old Users", "Top Contributors"];
+const filter = ["New Tag", " Old Tag",];
 
-const Tags = async ({ searchParams }: {searchParams: {q:string}}) => {
-  const allTags = await getAllTags(searchParams.q);
+const Tags = async ({ searchParams }: {searchParams: {q:string, filter: string}}) => {
+  const allTags = await getAllTags(searchParams.q, searchParams.filter);
 
   return (
     <div>

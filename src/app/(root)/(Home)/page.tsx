@@ -1,4 +1,3 @@
-
 import React from "react";
 import { UserButton, auth } from "@clerk/nextjs";
 import useTheme from "@/context/context";
@@ -14,9 +13,9 @@ import { getAllQuestions } from "@/database/actions.db";
 import { ContextType } from "react";
 import ImageComponent from "@/components/ImageComponent";
 
-const Home = async ({ searchParams }: {searchParams: {q:string}}) => { 
+const Home = async ({ searchParams }: {searchParams: {q:string, filter? : string}}) => { 
 
-  const questions = await getAllQuestions(searchParams.q);
+  const questions = await getAllQuestions(searchParams.q,searchParams.filter);
  
     return (
       <>
@@ -35,7 +34,7 @@ const Home = async ({ searchParams }: {searchParams: {q:string}}) => {
 
         <div className="mid flex gap-4  flex-col max-md:flex-row max-sm:flex-col">
           <SearchBar route={`/`} />
-          <FilterDropDown items={HomeFilter}></FilterDropDown>
+          <FilterDropDown  items={HomeFilter}></FilterDropDown>
         </div>
 
 
