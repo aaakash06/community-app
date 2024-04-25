@@ -22,9 +22,11 @@ type QuestionType = {
   createdAt: Date;
 };
 
-export async function getAllUsers(filter: string) {
+export async function getAllUsers(filter?: string, page?: number) {
   try {
+    let skips = (page! - 1) * 5 || 0;
     await connectToDB();
+
     let sortQuery = {};
     sortQuery = { joinAt: -1 };
 
@@ -43,9 +45,9 @@ export async function getAllUsers(filter: string) {
       default:
         break;
     }
-    const users = await User.find().sort(sortQuery);
-
-    return users;
+    const users = await User.find().sort(sortQuery).skip(skips).limit(6);
+    const noUsers = await User.countDocuments();
+    return { users, noUsers };
   } catch (err) {
     console.log("eror occured during fetching all users from db");
     console.log(err);
@@ -128,7 +130,8 @@ export async function postQuestion(data: QuestionInterface) {
 
 export const getAllQuestions = async (
   searchParams?: string,
-  filter?: string
+  filter?: string,
+  page?: number
 ) => {
   try {
     const query: FilterQuery<typeof Question> = {};
@@ -139,6 +142,8 @@ export const getAllQuestions = async (
         { content: { $regex: new RegExp(searchParams, "i") } },
       ];
     }
+    let skips = (page! - 1) * 5 || 0;
+
     let sortQuery = {};
     sortQuery = { createdAt: -1 };
     // newest recommended frequent unanswered
@@ -162,9 +167,12 @@ export const getAllQuestions = async (
 
     let allQuestions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
-      .sort(sortQuery);
+      .sort(sortQuery)
+      .skip(skips)
+      .limit(5);
     // console.log(allQuestions)
-    return allQuestions;
+    const noQuestion = await Question.countDocuments(query);
+    return { allQuestions, noQuestion };
   } catch (err) {
     console.log("coudn't fetch posts");
     console.log(err);
@@ -288,10 +296,15 @@ export async function updateUserByClerk(
     console.log(err);
   }
 }
-export async function getAllTags(searchParams: string, filter: string) {
+export async function getAllTags(
+  searchParams: string,
+  filter: string,
+  page: number
+) {
   try {
     let sortQuery = {};
     await connectToDB();
+
     let query: FilterQuery<typeof Tag> = {};
     if (searchParams) {
       query = { name: { $regex: new RegExp(searchParams, "i") } };
@@ -308,11 +321,14 @@ export async function getAllTags(searchParams: string, filter: string) {
       default:
         break;
     }
-
-    const tags = Tag.find(query).sort(sortQuery);
+    let skips = (page! - 1) * 5 || 0;
+    const tags = await Tag.find(query).sort(sortQuery).skip(skips).limit(6);
 
     if (!tags) return [];
-    return tags;
+
+    const totalTags = await Tag.countDocuments();
+
+    return { tags, totalTags };
   } catch (err) {
     console.log("couldn't tag all tags");
     console.log(err);
@@ -560,21 +576,30 @@ export async function saveQuestion(qId: string, userId: string, type: string) {
   }
 }
 
-export async function getSavedQuestions(userId: string, searchParams: string) {
+export async function getSavedQuestions(
+  userId: string,
+  searchParams: string,
+  page?: number
+) {
   try {
     await connectToDB();
+    let skips = (page! - 1) * 5 || 0;
     let query: FilterQuery<typeof Question> = {};
     if (searchParams) {
       query = { title: { $regex: new RegExp(searchParams, "i") } };
     }
+    const noQuestionsUser = await User.findOne({ clerkId: userId });
+    const noQuestion = noQuestionsUser.saved.length;
     const users = await User.findOne({ clerkId: userId }).populate({
       path: "saved",
       model: Question,
       match: query,
-      options: { sort: { createdAt: -1 } },
+      options: { skip: skips, limit: 5, sort: { createdAt: -1 } },
       populate: { path: "tags", model: Tag, select: "_id name" },
     });
-    return users.saved;
+    const ret = users.saved;
+
+    return { ret, noQuestion };
   } catch (err) {
     console.log(err);
     console.log("couldn't get saved questions");

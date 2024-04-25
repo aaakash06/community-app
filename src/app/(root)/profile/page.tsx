@@ -1,4 +1,4 @@
-import Cart from "@/components/shared/Cart/Cart";
+import Cart, { QuestionType } from "@/components/shared/Cart/Cart";
 import { getUserByClerkIdAndPopulate } from "@/database/actions.db";
 import { auth } from "@clerk/nextjs";
 import React from "react";
@@ -9,6 +9,7 @@ import AnswerCart from "@/components/AnswerCart";
 import ParseHTML from "@/components/ParseHTML";
 import Link from "next/link";
 import ProfileAnswerCart from "@/components/ProfileAnswerCart";
+import { IAnswer } from "@/database/model.db";
 
 const Profile = async () => {
   const { userId } = auth();
@@ -55,9 +56,9 @@ const Profile = async () => {
         <Button className="bg-light-700 dark:bg-dark-400 px-5 dark:text-white">
           {" "}
           <Link href="/profile/edit">Edit Profile</Link>
-          
         </Button>
       </div>
+
       <h4 className="font-bold text-xl mt-10 mb-3 dark:text-white">Stats</h4>
 
       <div className="Stats  grid grid-cols-4 gap-3 max-md:grid-cols-2 ">
@@ -69,7 +70,7 @@ const Profile = async () => {
           </div>
           <div className="flex flex-col">
             {" "}
-            <span className="text-center">{questions.length}</span>
+            <span className="text-center">{answers.length}</span>
             <span className="text-center">Answers</span>{" "}
           </div>
         </div>
@@ -122,19 +123,9 @@ const Profile = async () => {
               {questions.length == 0 ? (
                 <p>No questions posted yet</p>
               ) : (
-                questions?.map(
-                  //@ts-ignore
-                  (q) => {
-                    return (
-                      <Cart
-                        edit={true}
-                        key={q._id}
-                        //@ts-ignore
-                        question={q}
-                      ></Cart>
-                    );
-                  }
-                )
+                questions?.map((q: QuestionType) => {
+                  return <Cart edit={true} key={q.title} question={q}></Cart>;
+                })
               )}
             </div>
           </TabsContent>
@@ -143,10 +134,9 @@ const Profile = async () => {
               {answers.length == 0 ? (
                 <p>No answers posted yet</p>
               ) : (
-                //@ts-ignore
-                answers.map((ans) => (
+                answers.map((ans: any) => (
                   <div
-                    key={ans}
+                    key={ans.content}
                     className="mt-5 flex flex-col gap-2 dark:bg-dark-300 p-5 rounded-md py-7 shadow-md dark:shadow-none"
                   >
                     <h2 className="font-bold text-xl mb-4">

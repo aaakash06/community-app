@@ -7,12 +7,22 @@ import { getAllUsers } from "@/database/actions.db";
 import Link from "next/link";
 import React from "react";
 import { IUser } from "@/database/model.db";
+import Paginate from "@/components/shared/paginate";
 
 const filter = ["New Users", " Old Users", "Top Contributors"];
 
-const Community = async ({searchParams}: {searchParams: {filter: string}}) => {
-  //@ts-ignore
-  const users: IUser[] = await getAllUsers(searchParams.filter);
+const Community = async ({
+  searchParams,
+}: {
+  searchParams: { filter?: string; page?: string };
+}) => {
+  const { users, noUsers }: any = await getAllUsers(
+    searchParams?.filter!,
+    +searchParams?.page!
+  );
+
+  // we will paginate by 5 per page
+  const noPage = noUsers < 6 ? 1 : Math.floor(noUsers / 6) + (noUsers % 6);
 
   return (
     <div>
@@ -24,10 +34,11 @@ const Community = async ({searchParams}: {searchParams: {filter: string}}) => {
         <FilterDropDown items={filter} tags={false}></FilterDropDown>
       </div>
       <div className="mt-10 grid gap-x-5 max-md:grid-cols-2 gap-y-4 grid-cols-3">
-        {users?.map((user) => {
+        {users?.map((user: IUser) => {
           return <UserCart key={user.name} user={user}></UserCart>;
         })}
       </div>
+      <Paginate route="/" noPage={noPage} />
     </div>
   );
 };
