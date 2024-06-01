@@ -37,13 +37,16 @@ const Cart = async ({ question, edit = false }: Prop) => {
   return (
     <div className="flex flex-col gap-5 p-7 max-sm:px-4  background-light900_dark200 rounded-lg shadow-md  ">
       <div className="flex items-center gap-1 md:hidden ">
-        <Image
-          alt="avatar"
-          className="rounded-full"
-          src={author.picture}
-          width={25}
-          height={20}
-        ></Image>
+        {author && (
+          <Image
+            alt="avatar"
+            className="rounded-full"
+            src={author.picture}
+            width={25}
+            height={20}
+          ></Image>
+        )}
+
         <span>
           {authName}
           <span className="">
@@ -87,16 +90,19 @@ const Cart = async ({ question, edit = false }: Prop) => {
 
       <div className="bottom flex justify-between flex-wrap gap-y-5">
         <div className="flex items-center gap-1 max-md:hidden ">
-          <Image
-            alt="avatar"
-            className="rounded-full"
-            src={author.picture}
-            width={25}
-            height={20}
-          ></Image>
+          {author && (
+            <Image
+              alt="avatar"
+              className="rounded-full"
+              src={author.picture}
+              width={25}
+              height={20}
+            ></Image>
+          )}
+
           <span className="">
             {" "}
-            {authName}{" "}
+            {authName || "Deleted"}{" "}
             <span className="">- asked {getTimeAgo(question.createdAt)}</span>{" "}
           </span>
         </div>

@@ -22,7 +22,6 @@ import Voting from "@/components/shared/voting/Voting";
 // ??? not sure how data/user was cached, creating user with the previously signed in id even wihthout a user being signed in ????
 //something to think about--
 
-
 const QuestionDetail = async ({
   params,
   searchParams,
@@ -36,7 +35,7 @@ const QuestionDetail = async ({
   const { _id, saved } = userId ? await getUserByClerkId(userId!) : nullObject;
   // console.log(_id);
   const question = await getQuestionById(params.id);
-// console.log(params.id)
+  // console.log(params.id)
   const includesUpvote = question?.upvotes.includes(_id);
   const includesDownvote = question?.downvotes.includes(_id);
   // console.log(question)
@@ -53,10 +52,9 @@ const QuestionDetail = async ({
   };
 
   const prop2 = {
- 
     userId: _id ? JSON.stringify(_id) : null,
-  }
-  
+  };
+
   return (
     <div className="flex flex-col gap-10 dark:text-white font-poppins">
       <div className="flex justify-between">
@@ -65,22 +63,23 @@ const QuestionDetail = async ({
             href={`/community`}
             className="flex items-center justify-start gap-2"
           >
-            <Image
-              src={question.author.picture}
-              alt="profile picture"
-              className="rounded-full"
-              width={22}
-              height={22}
-            />
+            {question.author && (
+              <Image
+                src={question.author.picture}
+                alt="profile picture"
+                className="rounded-full"
+                width={22}
+                height={22}
+              />
+            )}
+
             <p className="paragraph-semibold text-sm text-dark300_light700 line-clamp-1">
-              {question.author.name}
+              {question.author?.name || "Deleted"}
             </p>
           </Link>
         </div>
 
-        <Voting
-        prop= {prop}
-        />
+        <Voting prop={prop} />
       </div>
 
       <h2 className="h3-bold"> {question.title} </h2>
@@ -91,9 +90,9 @@ const QuestionDetail = async ({
             alt="avatar"
             className="rounded-full"
             src="/assets/icons/clock.svg"
-          width={0}
-          height={0}
-            style={{ width: 'auto', height: 'auto' }}
+            width={0}
+            height={0}
+            style={{ width: "auto", height: "auto" }}
           ></Image>{" "}
           <span className=""> - asked {getTimeAgo(question.createdAt)}</span>
         </div>
@@ -101,9 +100,9 @@ const QuestionDetail = async ({
         <div className="like flex gap-1">
           <Image
             src="/assets/icons/message.svg"
-              width={0}
-          height={0}
-            style={{ width: 'auto', height: 'auto' }}
+            width={0}
+            height={0}
+            style={{ width: "auto", height: "auto" }}
             alt="like-svg"
           />
           <span>{formatNumber(question.answers.length)} Answers</span>
@@ -111,9 +110,9 @@ const QuestionDetail = async ({
         <div className="like flex gap-1">
           <Image
             src="/assets/icons/eye.svg"
-              width={0}
-          height={0}
-            style={{ width: 'auto', height: 'auto' }}
+            width={0}
+            height={0}
+            style={{ width: "auto", height: "auto" }}
             alt="like-svg"
           />
           <span> {formatNumber(question.views)} views</span>
