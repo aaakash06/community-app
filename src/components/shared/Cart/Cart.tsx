@@ -48,7 +48,7 @@ const Cart = async ({ question, edit = false }: Prop) => {
         )}
 
         <span>
-          {authName}
+          {authName || "Deleted"}
           <span className="">
             {" "}
             - asked {getTimeAgo(question.createdAt)}

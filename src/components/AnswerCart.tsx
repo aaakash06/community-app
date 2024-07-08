@@ -25,6 +25,8 @@ const AnswerCart = async ({
     ? ans.downvotes.includes(JSON.parse(userId!))
     : false;
 
+  const author = await getUserById(ans.author);
+
   // const { upvotes, downvotes, userId, qId, hasSaved, includesDownvotes ,includesUpvotes} = ans;
   const proP = {
     upvotes,
@@ -44,15 +46,26 @@ const AnswerCart = async ({
           href={`/community`}
           className="flex items-center flex-[.9] justify-start gap-2"
         >
-          <Image
+          {/* <Image
             src={await getUserById(ans.author).then((res) => res.picture)}
             alt="profile picture"
             className="rounded-full"
             width={22}
             height={22}
-          />
+          /> */}
+
+          {author && (
+            <Image
+              src={author.picture}
+              alt="profile picture"
+              className="rounded-full"
+              width={22}
+              height={22}
+            />
+          )}
+
           <p className="text-sm text-dark300_light700">
-            {await getUserById(ans.author).then((res) => res.name)}{" "}
+            {author ? author.name : "Deleted"}{" "}
             <span> - answered {getTimeAgo(ans.createdAt)} </span>
           </p>
         </Link>

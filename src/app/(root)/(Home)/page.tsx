@@ -57,7 +57,7 @@ const Home = async ({
 
           <p className="mt-10 text-center text-xl poppins text-primary-500">
             {" "}
-            There is no saved question to show
+            There is no question to show
           </p>
         </div>
       ) : (
